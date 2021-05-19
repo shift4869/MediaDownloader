@@ -21,7 +21,7 @@ def LinkSearchMain(work_kind, work_url, save_path):
         username = config["pixiv"]["username"]
         password = config["pixiv"]["password"]
         lsb = LSPixiv.LSPixiv(username, password, save_path)
-    elif work_kind == "nijie" and config["nijie"]["is_pixiv_trace"]:
+    elif work_kind == "nijie" and config["nijie"]["is_nijie_trace"]:
         email = config["nijie"]["email"]
         password = config["nijie"]["password"]
         lsb = LSNijie.LSNijie(email, password, save_path)
