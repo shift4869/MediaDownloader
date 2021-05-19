@@ -117,7 +117,10 @@ log*.txt*
 /archive
 *credentials*.json
 *.jpg
+*.png
 *.gif
 *.xcf
 *.pdf
 *.bat
+*PySimpleGUI*
+

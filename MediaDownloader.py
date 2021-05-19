@@ -1,7 +1,7 @@
 # coding: utf-8
-# import MediaDownloader.MediaDownloader as MediaDownloader
+import MediaDownloader.GuiMain
 
 # python MediaDownloader.py
 
 if __name__ == "__main__":
-    pass
+    MediaDownloader.GuiMain.GuiMain()
