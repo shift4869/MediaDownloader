@@ -1,15 +1,22 @@
 # coding: utf-8
+from MediaDownloader.pixiv_auth import login
 import configparser
 import logging.config
 import re
+from base64 import urlsafe_b64encode
+from hashlib import sha256
 from logging import INFO, getLogger
 from pathlib import Path
+from secrets import token_urlsafe
 from time import sleep
 from typing import List
+from urllib.parse import urlencode
 
+from bs4 import BeautifulSoup
 import emoji
 from PIL import Image
 from pixivpy3 import *
+import requests
 
 from MediaDownloader import LinkSearchBase
 
@@ -73,10 +80,21 @@ class LSPixiv(LinkSearchBase.LinkSearchBase):
                 pass
 
         if not auth_success:
+            # refresh_tokenが存在していない場合、または有効なトークンではなかった場合
             try:
-                api.login(username, password)
-                aapi.login(username, password)
-                auth_success = (api.access_token is not None) and (aapi.access_token is not None)
+                # api.login(username, password)
+                # aapi.login(username, password)
+                # auth_success = (api.access_token is not None) and (aapi.access_token is not None)
+                # 2021/05/20現在PixivPyで新規ログインができない
+                # https://gist.github.com/ZipFile/c9ebedb224406f4f11845ab700124362
+                # https://gist.github.com/upbit/6edda27cb1644e94183291109b8a5fde
+                logger.info(f"not found {REFRESH_TOKEN_PATH}")
+                logger.info("please access to make refresh_token.ini for below way:")
+                logger.info("https://gist.github.com/ZipFile/c9ebedb224406f4f11845ab700124362")
+                logger.info(" or ")
+                logger.info("https://gist.github.com/upbit/6edda27cb1644e94183291109b8a5fde")
+                logger.info("process abort")
+                return (None, None, False)
 
                 # refresh_tokenを保存
                 refresh_token = api.refresh_token
