@@ -4,13 +4,35 @@ import logging.config
 from logging import INFO, getLogger
 from pathlib import Path
 
-from MediaDownloader import LSPixiv, LSNijie
+import PySimpleGUI as sg
+
+from MediaDownloader import GuiMain, LSPixiv, LSNijie
 
 logger = getLogger("root")
 logger.setLevel(INFO)
 
 
 def LinkSearchMain(work_kind, work_url, save_path):
+    if work_url == "":
+        print("作品ページURLが空欄です。")
+        return -1
+    if save_path == "":
+        print("保存先パスが空欄です。")
+        return -1
+    if work_kind not in GuiMain.target:
+        print("対象サイトが不正です。")
+        return -1
+    try:
+        sp = Path(save_path)
+        if not sp.is_dir():
+            sp.mkdir(exist_ok=True, parents=True)
+        if not sp.is_dir():
+            print("保存先ディレクトリの作成に失敗しました。")
+            return -1
+    except Exception:
+        print("保存先ディレクトリの作成に失敗しました。")
+        return -1
+
     CONFIG_FILE_NAME = "./config/config.ini"
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE_NAME, encoding="utf8")
@@ -35,4 +57,5 @@ def LinkSearchMain(work_kind, work_url, save_path):
 
 
 if __name__ == "__main__":
+    GuiMain.GuiMain()
     pass

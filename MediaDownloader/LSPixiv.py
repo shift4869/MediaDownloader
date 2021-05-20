@@ -36,8 +36,8 @@ class LSPixiv(LinkSearchBase.LinkSearchBase):
         self.auth_success = False
         self.api, self.aapi, self.auth_success = self.Login(username, password)
 
-        if not self.auth_success:
-            exit(-1)
+        # if not self.auth_success:
+        #     exit(-1)
 
         self.base_path = base_path
 
@@ -99,7 +99,7 @@ class LSPixiv(LinkSearchBase.LinkSearchBase):
         Returns:
             boolean: pixiv作品ページURLならTrue、そうでなければFalse
         """
-        pattern = r"^https://www.pixiv.net/artworks/[0-9]*$"
+        pattern = r"^https://www.pixiv.net/artworks/[0-9]+$"
         regex = re.compile(pattern)
         return not (regex.findall(url) == [])
 
@@ -363,10 +363,12 @@ class LSPixiv(LinkSearchBase.LinkSearchBase):
         return 0
 
     def Process(self, url: str) -> int:
+        if not self.auth_success:
+            return -1
         urls = self.GetIllustURLs(url)
         save_directory_path = self.MakeSaveDirectoryPath(url, self.base_path)
-        self.DownloadIllusts(urls, save_directory_path)
-        return 0
+        res = self.DownloadIllusts(urls, save_directory_path)
+        return 0 if (res in [0, 1]) else -1
 
 
 if __name__ == "__main__":

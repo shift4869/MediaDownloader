@@ -37,8 +37,8 @@ class LSNijie(LinkSearchBase.LinkSearchBase):
         self.auth_success = False
         self.cookies, self.auth_success = self.Login(email, password)
 
-        if not self.auth_success:
-            exit(-1)
+        # if not self.auth_success:
+        #     exit(-1)
 
         self.base_path = base_path
     
@@ -159,11 +159,11 @@ class LSNijie(LinkSearchBase.LinkSearchBase):
         Returns:
             boolean: nijie作品ページURLならTrue、そうでなければFalse
         """
-        pattern = r"^http://nijie.info/view.php\?id=[0-9]*$"
+        pattern = r"^http://nijie.info/view.php\?id=[0-9]+$"
         regex = re.compile(pattern)
         f1 = not (regex.findall(url) == [])
 
-        pattern = r"^http://nijie.info/view_popup.php\?id=[0-9]*$"
+        pattern = r"^http://nijie.info/view_popup.php\?id=[0-9]+$"
         regex = re.compile(pattern)
         f2 = not (regex.findall(url) == [])
 
@@ -386,8 +386,10 @@ class LSNijie(LinkSearchBase.LinkSearchBase):
         return str(save_directory_path)
 
     def Process(self, url: str) -> int:
-        self.DownloadIllusts(url, self.base_path)
-        return 0
+        if not self.auth_success:
+            return -1
+        res = self.DownloadIllusts(url, self.base_path)
+        return 0 if (res in [0, 1]) else -1
 
 
 if __name__ == "__main__":
