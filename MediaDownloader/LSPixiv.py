@@ -1,22 +1,15 @@
 # coding: utf-8
-from MediaDownloader.pixiv_auth import login
 import configparser
 import logging.config
 import re
-from base64 import urlsafe_b64encode
-from hashlib import sha256
 from logging import INFO, getLogger
 from pathlib import Path
-from secrets import token_urlsafe
 from time import sleep
 from typing import List
-from urllib.parse import urlencode
 
-from bs4 import BeautifulSoup
 import emoji
 from PIL import Image
 from pixivpy3 import *
-import requests
 
 from MediaDownloader import LinkSearchBase
 
