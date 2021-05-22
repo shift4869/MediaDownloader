@@ -10,6 +10,8 @@ import bs4
 import emoji
 import requests
 from bs4 import BeautifulSoup
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 
 from MediaDownloader import LinkSearchBase
 
@@ -35,6 +37,21 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         self.email = email
         self.password = password
         self.base_path = base_path
+
+        # セッション開始
+        self.session = requests.session()
+        retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
+        self.session.mount("http://", HTTPAdapter(max_retries=retries))
+        self.session.mount("https://", HTTPAdapter(max_retries=retries))
+
+        # ログイン
+        NS_LOGIN_ENDPOINT = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
+        params = {
+            "mail_tel": self.email,
+            "password": self.password,
+        }
+        response = self.session.post(NS_LOGIN_ENDPOINT, data=params, headers=self.headers)
+        response.raise_for_status()
 
     def IsTargetUrl(self, url: str) -> bool:
         """URLがニコニコ静画のURLかどうか判定する
@@ -71,6 +88,93 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         illust_id = int(tail[2:])
         return illust_id
 
+    def GetIllustInfo(self, illust_id: int) -> tuple[int, str]:
+        """ニコニコ静画情報を取得する
+
+        Args:
+            illust_id (int): 対象作品ID
+
+        Returns:
+            (author_id, illust_title) (str, str): 作者IDと作品タイトルの組
+        """
+        # 静画情報取得APIエンドポイント
+        NS_IMAGE_INFO_API_ENDPOINT = "http://seiga.nicovideo.jp/api/illust/info?id="
+
+        # 静画情報を取得する
+        info_url = NS_IMAGE_INFO_API_ENDPOINT + str(illust_id)
+        response = self.session.get(info_url, headers=self.headers)
+        response.raise_for_status()
+
+        # 静画情報解析
+        author_id = -1
+        illust_title = ""
+        try:
+            soup = BeautifulSoup(response.text, "lxml-xml")
+            xml_image = soup.find("image")
+            author_id = xml_image.find("user_id").text
+            illust_title = xml_image.find("title").text
+        except Exception:
+            author_id = -1
+            illust_title = ""
+        return (int(author_id), illust_title)
+
+    def GetAuthorName(self, author_id: int) -> str:
+        """ニコニコ静画の作者名を取得する
+
+        Args:
+            author_id (int): 作者ID
+
+        Returns:
+            author_name (str): 作者名
+        """
+        # 作者情報取得APIエンドポイント
+        NS_USERNAME_API_ENDPOINT = "https://seiga.nicovideo.jp/api/user/info?id="
+
+        # 作者情報を取得する
+        username_info_url = NS_USERNAME_API_ENDPOINT + str(author_id)
+        response = self.session.get(username_info_url, headers=self.headers)
+        response.raise_for_status()
+
+        # 作者情報解析
+        author_name = ""
+        try:
+            soup = BeautifulSoup(response.text, "lxml-xml")
+            xml_user = soup.find("user")
+            author_name = xml_user.find("nickname").text
+        except Exception:
+            author_name = ""
+        return author_name
+
+    def GetSourceURL(self, illust_id: int) -> str:
+        """ニコニコ静画の画像直リンクを取得する
+
+        Args:
+            illust_id (int): 対象作品ID
+
+        Returns:
+            source_url (str): 画像直リンク
+        """
+        # ニコニコ静画ページ取得APIエンドポイント
+        NS_IMAGE_SOUECE_API_ENDPOINT = "http://seiga.nicovideo.jp/image/source?id="
+
+        # ニコニコ静画ページ取得（画像表示部分のみ）
+        source_page_url = NS_IMAGE_SOUECE_API_ENDPOINT + str(illust_id)
+        response = self.session.get(source_page_url, headers=self.headers)
+        response.raise_for_status()
+
+        # ニコニコ静画ページを解析して画像直リンクを取得する
+        source_url = ""
+        try:
+            soup = BeautifulSoup(response.text, "html.parser")
+            div_contents = soup.find_all("div", id="content")
+            for div_content in div_contents:
+                div_illust = div_content.find(class_="illust_view_big")
+                source_url = div_illust.get("data-src")
+                break
+        except Exception:
+            source_url = ""
+        return source_url
+
     def DownloadIllusts(self, url: str, base_path: str) -> int:
         """ニコニコ静画作品ページURLからダウンロードする
 
@@ -89,47 +193,10 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         Returns:
             int: DL成功時0、スキップされた場合1、エラー時-1
         """
-        NS_LOGIN_ENDPOINT = "https://account.nicovideo.jp/login"
-        NS_LOGIN_REDIRECTOR = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
-        NS_IMAGE_SOUECE_API_ENDPOINT = "http://seiga.nicovideo.jp/image/source?id="
-        NS_IMAGE_INFO_API_ENDPOINT = "http://seiga.nicovideo.jp/api/illust/info?id="
-        NS_USERNAME_API_ENDPOINT = "https://seiga.nicovideo.jp/api/user/info?id="
 
-        author_name = ""
-        author_id = ""
-        illust_title = ""
         illust_id = self.GetIllustId(url)
-
-        # セッション開始
-        session = requests.session()
-        params = {
-            "mail_tel": self.email,
-            "password": self.password,
-        }
-        # ログインする
-        response = session.post(NS_LOGIN_REDIRECTOR, data=params, headers=self.headers)
-        response.raise_for_status()
-
-        # 静画情報を取得する
-        info_url = NS_IMAGE_INFO_API_ENDPOINT + str(illust_id)
-        response = session.get(info_url, headers=self.headers)
-        response.raise_for_status()
-
-        # 静画情報解析
-        soup = BeautifulSoup(response.text, "lxml-xml")
-        xml_image = soup.find("image")
-        author_id = xml_image.find("user_id").text
-        illust_title = xml_image.find("title").text
-
-        # 作者情報を取得する
-        username_info_url = NS_USERNAME_API_ENDPOINT + str(author_id)
-        response = session.get(username_info_url, headers=self.headers)
-        response.raise_for_status()
-
-        # 作者情報解析
-        soup = BeautifulSoup(response.text, "lxml-xml")
-        xml_user = soup.find("user")
-        author_name = xml_user.find("nickname").text
+        author_id, illust_title = self.GetIllustInfo(illust_id)
+        author_name = self.GetAuthorName(author_id)
 
         # パスに使えない文字をサニタイズする
         # TODO::サニタイズを厳密に行う
@@ -146,37 +213,33 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         if save_directory_path == "":
             return -1
 
-        # ニコニコ静画ページ取得（画像表示部分のみ）
-        source_page_url = NS_IMAGE_SOUECE_API_ENDPOINT + str(illust_id)
-        response = session.get(source_page_url, headers=self.headers)
-        response.raise_for_status()
-
-        # ニコニコ静画ページ解析して画像直リンクを取得する → source_url
-        soup = BeautifulSoup(response.text, "html.parser")
-        div_contents = soup.find_all("div", id="content")
-        source_url = ""
-        for div_content in div_contents:
-            div_illust = div_content.find(class_="illust_view_big")
-            source_url = div_illust.get("data-src")
-            break
-
+        # 画像直リンクを取得
+        source_url = self.GetSourceURL(illust_id)
         if source_url == "":
             return -1
-        
+
         # {作者名}ディレクトリ作成
         sd_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # ファイルが既に存在しているか調べる
+        # 拡張子は実際にDLするまで分からない
+        # そのため、対象フォルダ内にillust_idを含むファイル名を持つファイルが存在するか調べることで代用する
+        name = sd_path.name
+        pattern = "^.*\(" + str(illust_id) + "\).*$"
+        same_name_list = [f for f in sd_path.parent.glob("**/*") if re.search(pattern, str(f))]
+
+        # 既に存在しているなら再DLしないでスキップ
+        if same_name_list:
+            name = same_name_list[0].name
+            logger.info("Download seiga illust: " + name + " -> exist")
+            return 1
 
         # ファイル名設定
         ext = ".jpg"
         name = "{}{}".format(sd_path.name, ext)
 
-        # 既に存在しているなら再DLしないでスキップ
-        if (sd_path.parent / name).is_file():
-            logger.info("Download seiga illust: " + name + " -> exist")
-            return 1
-
-        # 画像保存
-        response = session.get(source_url, headers=self.headers)
+        # 画像DL
+        response = self.session.get(source_url, headers=self.headers)
         response.raise_for_status()
 
         # {作者名}ディレクトリ直下に保存
@@ -205,7 +268,7 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         Returns:
             str: 成功時 保存先ディレクトリパス、失敗時 空文字列
         """
-        if author_name == "" or author_id == -1 or illust_title == "" or illust_id == "":
+        if author_name == "" or author_id == -1 or illust_title == "" or illust_id == -1:
             return ""
 
         # 既に{作者nijieID}が一致するディレクトリがあるか調べる
