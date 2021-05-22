@@ -1,4 +1,5 @@
 # coding: utf-8
+from MediaDownloader.LSNicoSeiga import LSNicoSeiga
 import configparser
 import logging.config
 from logging import INFO, getLogger
@@ -6,7 +7,7 @@ from pathlib import Path
 
 import PySimpleGUI as sg
 
-from MediaDownloader import GuiMain, LSPixiv, LSNijie
+from MediaDownloader import GuiMain, LSPixiv, LSNijie, LSNicoSeiga
 
 logger = getLogger("root")
 logger.setLevel(INFO)
@@ -47,6 +48,10 @@ def LinkSearchMain(work_kind, work_url, save_path):
         email = config["nijie"]["email"]
         password = config["nijie"]["password"]
         lsb = LSNijie.LSNijie(email, password, save_path)
+    elif work_kind == "seiga" and config["nico_seiga"]["is_seiga_trace"]:
+        email = config["nico_seiga"]["email"]
+        password = config["nico_seiga"]["password"]
+        lsb = LSNicoSeiga.LSNicoSeiga(email, password, save_path)
     else:
         pass
 

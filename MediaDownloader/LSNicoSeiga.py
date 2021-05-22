@@ -9,6 +9,7 @@ import bs4
 
 import emoji
 import requests
+import urllib
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
@@ -65,6 +66,10 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         Returns:
             boolean: ニコニコ静画作品ページURLならTrue、そうでなければFalse
         """
+        # クエリを除去
+        url_path = Path(urllib.parse.urlparse(url).path)
+        url = urllib.parse.urljoin(url, url_path.name)
+
         pattern = r"^https://seiga.nicovideo.jp/seiga/(im)[0-9]+$"
         regex = re.compile(pattern)
         return not (regex.findall(url) == [])
@@ -174,6 +179,33 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         except Exception:
             source_url = ""
         return source_url
+    
+    def GetExtFromBytes(self, data: bytes) -> str:
+        """バイナリデータ配列から拡張子を判別する
+
+        Args:
+            data (bytes): 対象byte列
+
+        Returns:
+            ext (str): 拡張子（'.xxx'）, エラー時（'.invalid'）
+        """
+        ext = ".invalid"
+
+        # プリフィックスを得るのに短すぎるbyte列の場合はエラー
+        if len(data) < 8:
+            return ".invalid"
+
+        # 拡張子判別
+        if bool(re.search(b"^\xff\xd8", data[:2])):
+            # jpgは FF D8 で始まる
+            ext = ".jpg"
+        elif bool(re.search(b"^\x89\x50\x4e\x47\x0d\x0a\x1a\x0a", data[:8])):
+            # pngは 89 50 4E 47 0D 0A 1A 0A で始まる
+            ext = ".png"
+        elif bool(re.search(b"^\x47\x49\x46\x38", data[:4])):
+            # gifは 47 49 46 38 で始まる
+            ext = ".gif"
+        return ext
 
     def DownloadIllusts(self, url: str, base_path: str) -> int:
         """ニコニコ静画作品ページURLからダウンロードする
@@ -234,13 +266,15 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
             logger.info("Download seiga illust: " + name + " -> exist")
             return 1
 
-        # ファイル名設定
-        ext = ".jpg"
-        name = "{}{}".format(sd_path.name, ext)
-
         # 画像DL
         response = self.session.get(source_url, headers=self.headers)
         response.raise_for_status()
+
+        # 拡張子取得
+        ext = self.GetExtFromBytes(response.content)
+
+        # ファイル名設定
+        name = "{}{}".format(sd_path.name, ext)
 
         # {作者名}ディレクトリ直下に保存
         with Path(sd_path.parent / name).open(mode="wb") as fout:
@@ -297,6 +331,10 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         return str(save_directory_path)
 
     def Process(self, url: str) -> int:
+        # クエリを除去
+        url_path = Path(urllib.parse.urlparse(url).path)
+        url = urllib.parse.urljoin(url, url_path.name)
+
         res = self.DownloadIllusts(url, self.base_path)
         return 0 if (res in [0, 1]) else -1
 
