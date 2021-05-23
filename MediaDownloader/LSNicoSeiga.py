@@ -35,24 +35,41 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
         """
         super().__init__()
         self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"}
-        self.email = email
-        self.password = password
-        self.base_path = base_path
 
+        self.session = None
+        self.auth_success = False
+        self.base_path = base_path
+        self.session, self.auth_success = self.Login(email, password)
+
+        # if not self.auth_success:
+        #     exit(-1)
+
+    def Login(self, email: str, password: str) -> tuple[requests.Session, bool]:
+        """セッションを開始し、ログインする
+
+        Args:
+            email (str): ニコニコユーザーIDとして登録したemailアドレス
+            password (str): ニコニコユーザーIDのパスワード
+
+        Returns:
+            session, auth_success (requests.Session, boolean): 認証済みセッションと認証結果の組
+        """
         # セッション開始
-        self.session = requests.session()
+        session = requests.session()
         retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
-        self.session.mount("http://", HTTPAdapter(max_retries=retries))
-        self.session.mount("https://", HTTPAdapter(max_retries=retries))
+        session.mount("http://", HTTPAdapter(max_retries=retries))
+        session.mount("https://", HTTPAdapter(max_retries=retries))
 
         # ログイン
         NS_LOGIN_ENDPOINT = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
         params = {
-            "mail_tel": self.email,
-            "password": self.password,
+            "mail_tel": email,
+            "password": password,
         }
-        response = self.session.post(NS_LOGIN_ENDPOINT, data=params, headers=self.headers)
+        response = session.post(NS_LOGIN_ENDPOINT, data=params, headers=self.headers)
         response.raise_for_status()
+
+        return (session, True)
 
     def IsTargetUrl(self, url: str) -> bool:
         """URLがニコニコ静画のURLかどうか判定する
@@ -100,7 +117,7 @@ class LSNicoSeiga(LinkSearchBase.LinkSearchBase):
             illust_id (int): 対象作品ID
 
         Returns:
-            (author_id, illust_title) (str, str): 作者IDと作品タイトルの組
+            author_id, illust_title (str, str): 作者IDと作品タイトルの組
         """
         # 静画情報取得APIエンドポイント
         NS_IMAGE_INFO_API_ENDPOINT = "http://seiga.nicovideo.jp/api/illust/info?id="

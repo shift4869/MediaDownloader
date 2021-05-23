@@ -50,7 +50,7 @@ class LSNijie(LinkSearchBase.LinkSearchBase):
             password (str): nijieユーザーIDのパスワード
 
         Returns:
-            cookies (RequestsCookieJar): ログイン情報を保持したクッキー
+            cookies, auth_success (RequestsCookieJar, boolean): ログイン情報を保持したクッキーと認証結果の組
         """
         # ログイン情報を保持するクッキーファイル置き場
         NIJIE_COOKIE_PATH = "./config/nijie_cookie.ini"
