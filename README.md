@@ -7,7 +7,17 @@ PySimpleGUIを使用してGUIでの操作を前提とする。
 
 
 ## 特徴（できること）
-- 後で追記（pixivとnijieに対応予定）
+- 以下のサイトに対応している
+    - pixiv（一枚絵、漫画、うごイラ）  
+    - nijie（一枚絵、複数形式）  
+    - ニコニコ静画（一枚絵）  
+
+- サンプルURLは以下の形式。
+```
+"pixiv": "https://www.pixiv.net/artworks/xxxxxxxx",
+"nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
+"seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
+```
 
 
 ## 前提として必要なもの
