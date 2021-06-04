@@ -1,13 +1,14 @@
-Pillow == 8.1.2
-PixivPy == 3.5.11
-PySimpleGUI == 4.41.2
 beautifulsoup4 == 4.9.3
 cryptography == 3.4.6
 emoji == 1.2.0
+lxml==4.6.3
 mock == 4.0.3
 numpy == 1.20.3
 opencv_python == 4.5.2.52
 pandas == 1.2.4
+Pillow == 8.1.2
+PixivPy == 3.5.11
+PySimpleGUI == 4.41.2
 pywin32 == 301
 requests == 2.25.1
 scipy == 1.6.3
