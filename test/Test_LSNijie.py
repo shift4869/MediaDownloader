@@ -120,9 +120,8 @@ class TestLSNijie(unittest.TestCase):
             self.assertTrue(lsn_cont.auth_success)
 
             # 異常系
-            lsn_cont = LSNijie.LSNijie("invalid email", "invalid password", self.TEST_BASE_PATH)
-            self.assertIsNone(lsn_cont.cookies)
-            self.assertFalse(lsn_cont.auth_success)
+            with self.assertRaises(SystemExit):
+                lsn_cont = LSNijie.LSNijie("invalid email", "invalid password", self.TEST_BASE_PATH)
 
     def test_Login(self):
         """nijieページスクレイピングのインスタンス生成とログインをチェック
@@ -477,7 +476,7 @@ class TestLSNijie(unittest.TestCase):
                     self.assertTrue(sd_path.is_dir())
                     for i, url in enumerate(urls):
                         ext = Path(url).suffix
-                        file_name = "{:03}{}".format(i, ext)
+                        file_name = "{}_{:03}{}".format(sd_path.name, i, ext)
                         self.assertTrue((sd_path / file_name).is_file())
                 elif pages == 1:  # 一枚絵、うごイラ一枚
                     url = urls[0]

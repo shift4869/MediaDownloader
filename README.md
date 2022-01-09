@@ -16,7 +16,7 @@ PySimpleGUIを使用してGUIでの操作を前提とする。
 - サンプルURLは以下の形式
 ```
 "pixiv pic/manga": "https://www.pixiv.net/artworks/xxxxxxxx",
-"pixiv novel": "https://www.pixiv.net/novel/show.php?id=*******",
+"pixiv novel": "https://www.pixiv.net/novel/show.php?id=xxxxxxxx",
 "nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
 "seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
 ```
