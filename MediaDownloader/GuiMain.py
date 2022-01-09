@@ -8,13 +8,14 @@ import PySimpleGUI as sg
 from MediaDownloader import LinkSearchMain
 
 # 対象サイト
-target = ["pixiv", "nijie", "seiga"]
+target = ["pixiv pic/manga", "pixiv novel", "nijie", "seiga"]
 
 
 def GuiMain():
     # 対象URL例サンプル
     target_url_example = {
-        "pixiv": "https://www.pixiv.net/artworks/xxxxxxxx",
+        "pixiv pic/manga": "https://www.pixiv.net/artworks/xxxxxxxx",
+        "pixiv novel": "https://www.pixiv.net/novel/show.php?id=xxxxxxxx",
         "nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
         "seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
     }
@@ -23,9 +24,10 @@ def GuiMain():
     layout = [
         [sg.Text("MediaDownloader")],
         [sg.Text("対象サイト", size=(18, 1)), sg.Combo(target, key="-TARGET-", enable_events=True, default_value=target[0])],
-        [sg.Text("作品ページURL形式", size=(18, 1)), sg.Text(target_url_example[target[0]], key="-WORK_URL_SAMPLE-", size=(32, 1))],
+        [sg.Text("作品ページURL形式", size=(18, 1)), sg.Text(target_url_example[target[0]], key="-WORK_URL_SAMPLE-", size=(40, 1))],
         [sg.Text("作品ページURL", size=(18, 1)), sg.InputText(key="-WORK_URL-", default_text="")],
-        [sg.Text("保存先パス", size=(18, 1)), sg.InputText(key="-SAVE_PATH-", default_text=Path(__file__).parent), sg.FolderBrowse("参照", initial_folder=Path(__file__).parent, pad=((3, 0), (0, 0)))],
+        [sg.Text("保存先パス", size=(18, 1)), sg.InputText(key="-SAVE_PATH-", default_text=Path(__file__).parent),
+         sg.FolderBrowse("参照", initial_folder=Path(__file__).parent, pad=((3, 0), (0, 0)))],
         [sg.Text("", size=(53, 1)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0))), sg.Button("終了", key="-EXIT-")],
         [sg.Output(key="-OUTPUT-", size=(100, 10))],
     ]

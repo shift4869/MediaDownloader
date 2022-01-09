@@ -7,7 +7,7 @@ from pathlib import Path
 
 import PySimpleGUI as sg
 
-from MediaDownloader import GuiMain, LSPixiv, LSNijie, LSNicoSeiga
+from MediaDownloader import GuiMain, LSPixiv, LSPixivNovel, LSNijie, LSNicoSeiga
 
 logger = getLogger("root")
 logger.setLevel(INFO)
@@ -40,10 +40,14 @@ def LinkSearchMain(work_kind, work_url, save_path):
 
     # 仕組み上CoRを使わなくてもwork_kindで判別できるのでCoRは使わず直接派生クラスを呼ぶ
     lsb = None
-    if work_kind == "pixiv" and config["pixiv"]["is_pixiv_trace"]:
+    if work_kind == "pixiv pic/manga" and config["pixiv"]["is_pixiv_trace"]:
         username = config["pixiv"]["username"]
         password = config["pixiv"]["password"]
         lsb = LSPixiv.LSPixiv(username, password, save_path)
+    if work_kind == "pixiv novel" and config["pixiv"]["is_pixiv_trace"]:
+        username = config["pixiv"]["username"]
+        password = config["pixiv"]["password"]
+        lsb = LSPixivNovel.LSPixivNovel(username, password, save_path)
     elif work_kind == "nijie" and config["nijie"]["is_nijie_trace"]:
         email = config["nijie"]["email"]
         password = config["nijie"]["password"]
