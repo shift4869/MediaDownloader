@@ -8,7 +8,7 @@ import PySimpleGUI as sg
 from MediaDownloader import LinkSearchMain
 
 # 対象サイト
-target = ["pixiv pic/manga", "pixiv novel", "nijie", "seiga"]
+target = ["pixiv pic/manga", "pixiv novel", "nijie", "seiga", "skeb"]
 
 
 def GuiMain():
@@ -18,6 +18,7 @@ def GuiMain():
         "pixiv novel": "https://www.pixiv.net/novel/show.php?id=xxxxxxxx",
         "nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
         "seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
+        "skeb": "https://skeb.jp/@xxxxxxxx/works/xx",
     }
 
     # ウィンドウのレイアウト

@@ -7,7 +7,7 @@ from pathlib import Path
 
 import PySimpleGUI as sg
 
-from MediaDownloader import GuiMain, LSPixiv, LSPixivNovel, LSNijie, LSNicoSeiga
+from MediaDownloader import GuiMain, LSPixiv, LSPixivNovel, LSNijie, LSNicoSeiga, LSSkeb
 
 logger = getLogger("root")
 logger.setLevel(INFO)
@@ -56,6 +56,10 @@ def LinkSearchMain(work_kind, work_url, save_path):
         email = config["nico_seiga"]["email"]
         password = config["nico_seiga"]["password"]
         lsb = LSNicoSeiga.LSNicoSeiga(email, password, save_path)
+    elif work_kind == "skeb" and config["skeb"]["is_skeb_trace"]:
+        twitter_id = config["skeb"]["twitter_id"]
+        twitter_password = config["skeb"]["twitter_password"]
+        lsb = LSSkeb.LSSkeb(twitter_id, twitter_password, save_path)
     else:
         pass
 
