@@ -26,8 +26,8 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         """Skebページ取得用クラス
 
         Args:
-            twitter_id (str): SkebユーザーIDとして登録したtwitter_idアドレス
-            twitter_password (str): SkebユーザーIDのパスワード
+            twitter_id (str): SkebユーザーIDとして登録したツイッターID
+            twitter_password (str): SkebユーザーIDとして登録したツイッターのパスワード
 
         Attributes:
             auth_success (boolean): Skebログインが正常に完了したかどうか
@@ -53,8 +53,18 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         self.base_path = base_path
 
     async def GetTokenFromOAuth(self, twitter_id: str, twitter_password: str) -> str:
-        # pyppeteerを通してheadless chromeを操作してツイッターログインを行い
-        # Skebページで使うtokenを取得する
+        """ツイッターログインを行いSkebページで使うtokenを取得する
+
+        Notes:
+            pyppeteerを通してheadless chromeを操作する
+
+        Args:
+            twitter_id (str): SkebユーザーIDとして登録したツイッターID
+            twitter_password (str): SkebユーザーIDとして登録したツイッターのパスワード
+
+        Returns:
+            str: アクセスに使うトークン
+        """
         token = ""
         urls = []
         browser = await pyppeteer.launch(headless=True)
@@ -74,9 +84,13 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         logger.info("Skeb Top Page loaded.")
 
         # 右上のログインボタンを押下
+        # 不可視の別ボタンがある？ようなのでセレクタで該当した2つ目のタグを操作する
         # selector = "body > div > div > div > header > nav > div > div.navbar-menu > div > div > button"
         selector = 'button[class="button is-twitter"]'
         login_btn = await page.querySelectorAll(selector)
+        if len(login_btn) != 2 or not login_btn[1]:
+            logger.error("Twitter Login failed.")
+            return ""
         await asyncio.gather(login_btn[1].click(), page.waitForNavigation())
         content = await page.content()
         cookies = await page.cookies()
@@ -94,18 +108,17 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         await asyncio.gather(page.click(selector), page.waitForNavigation())
         logger.info("Twitter oauth running...")
 
-        # TODO::ツイッターログインが成功かどうか調べる
-
-        # このタイミングでコールバックURLが返ってくる
+        # ツイッターログインが成功かどうか調べる
+        # ログインに成功していればこのタイミングでコールバックURLが返ってくる
         await page.waitForNavigation()
         content = await page.content()
         cookies = await page.cookies()
-        logger.info("Twitter oauth success.")
 
         # コールバックURLがキャッチできたことを確認
         if len(urls) == 0:
             logger.error("Getting Skeb token is failed.")
             return ""
+        logger.info("Twitter oauth success.")
 
         # コールバックURLからtokenを切り出す
         callback_url = urls[0]
@@ -152,7 +165,8 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             # 取得したトークンを保存
             with stp.open("w") as fout:
                 fout.write(token)
-            pass
+
+            auth_success = True
 
         return (token, auth_success)
 
@@ -176,9 +190,11 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             return ""
 
         # pathの先頭チェック
-        # 先頭に"/"があった場合は"/"を無視する
+        # 先頭と末尾に"/"があった場合は"/"を無視する
         if path[0] == "/":
             path = path[1:]
+        if len(path) > 1 and path[-1] == "/":
+            path = path[:-1]
 
         callback_url = f"{self.top_url}callback?path=/{path}&token={token}"
         return callback_url
@@ -239,7 +255,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         Returns:
             boolean: Skeb作品ページURLならTrue、そうでなければFalse
         """
-        pattern = r"^https://skeb.jp/\@(.+)/works/[0-9]+$"
+        pattern = r"^https://skeb.jp/\@(.+?)/works/[0-9]+$"
         regex = re.compile(pattern)
         f = not (regex.findall(url) == [])
         return f
@@ -340,6 +356,19 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
                "https://skeb.imgix.net/requests/" in src_url:
                 source_list.append((src_url, "illust"))
 
+        # gif
+        # videoタグのsrc属性
+        # 動画として保存する
+        src_tags = r.html.find("video")
+        for src_tag in src_tags:
+            preload_a = src_tag.attrs.get("preload", "")
+            autoplay_a = src_tag.attrs.get("autoplay", "")
+            muted_a = src_tag.attrs.get("muted", "")
+            loop_a = src_tag.attrs.get("loop", "")
+            src_url = src_tag.attrs.get("src", "")
+            if preload_a == "auto" and autoplay_a == "autoplay" and muted_a == "muted" and loop_a == "loop" and src_url != "":
+                source_list.append((src_url, "video"))
+
         # 動画
         # type="video/mp4"属性を持つsourceタグのsrc属性
         src_tags = r.html.find("source")
@@ -348,6 +377,9 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             src_url = src_tag.attrs.get("src", "")
             if type == "video/mp4" and src_url != "":
                 source_list.append((src_url, "video"))
+
+        if len(source_list) == 0:
+            logger.error(f"GetWorkURLs : html analysis failed")
 
         return source_list
 
@@ -517,8 +549,12 @@ if __name__ == "__main__":
 
     sc = LSSkeb(config["skeb"]["twitter_id"], config["skeb"]["twitter_password"], config["skeb"]["save_base_path"])
 
-    work_url = "https://skeb.jp/@matsukitchi12/works/25"
+    # イラスト（複数）
+    # work_url = "https://skeb.jp/@matsukitchi12/works/25"
+    # 動画（単体）
     # work_url = "https://skeb.jp/@wata_lemon03/works/7"
+    # gif画像（複数）
+    work_url = "https://skeb.jp/@_sa_ya_/works/55"
     sc.Process(work_url)
 
     pass
