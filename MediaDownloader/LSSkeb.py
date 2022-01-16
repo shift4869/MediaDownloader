@@ -285,7 +285,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             work_id = int(m.group(2))
         return (author_name, work_id)
 
-    def ConvertWebp(self, target_path: Path, ext: str = ".png") -> str:
+    def ConvertWebp(self, target_path: Path, ext: str = ".png") -> Path:
         """webp形式の画像ファイルをpngに変換する
 
         Notes:
@@ -296,7 +296,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             ext (str, optional): ピリオドつきの変換先の拡張子　デフォルトは.png
 
         Returns:
-            str: 変換後のPathオブジェクト、エラー時None
+            Path: 変換後のPathオブジェクト、エラー時None
         """
         try:
             img = Image.open(target_path).convert("RGB")
@@ -334,7 +334,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         request_url = self.MakeCallbackURL(work_path, self.token)
         if(request_url == ""):
             logger.error("Setting Callback URL is failed.")
-            return (None, False)
+            return []
 
         # 作品ページを取得して解析する
         session = HTMLSession()
@@ -345,7 +345,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         r.raise_for_status()
         r.html.render(sleep=2)
 
-        # 画像
+        # イラスト
         # imgタグ、src属性のリンクURL形式が次のいずれかの場合
         # "https://skeb.imgix.net/uploads/"で始まる
         # "https://skeb.imgix.net/requests/"で始まる
@@ -387,7 +387,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         """保存先ディレクトリパスを生成する
 
         Notes:
-            保存先ディレクトリパスの形式は以下とする
+            出力する保存先ディレクトリパスの形式は以下とする
             {base_path}/{作者アカウント名}/{作品id}/
 
         Args:
@@ -417,14 +417,14 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         return str(save_directory_path)
 
     def DownloadWorks(self, source_list: list[str, str], save_directory_path: str) -> int:
-        """Skeb作品ページURLからイラストをダウンロードして保存先ディレクトリパスに保存する
+        """Skeb作品ページURLから作品をダウンロードして保存先ディレクトリパスに保存する
 
         Notes:
             保存先ディレクトリパスの形式は以下の形式を想定している
                 {base_path}/{作者アカウント名}/{作品id}/
             この配下に
                 複数作品ある場合：{作者アカウント名}_{作品id}_{3ケタの連番}.{拡張子(png)}
-                一枚絵の場合：{作者アカウント名}_{作品id}.{拡張子(png)}
+                単一の場合：{作者アカウント名}_{作品id}.{拡張子(png)}
             で保存される
             ※複数/一枚絵のイラストのみを対象とする
 
@@ -452,7 +452,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             # {作者名}/{作品名}ディレクトリ作成
             sd_path.mkdir(parents=True, exist_ok=True)
 
-            # 画像をDLする
+            # 作品をDLする
             # ファイル名は{イラストタイトル}({イラストID})_{3ケタの連番}.{拡張子}
             for i, src in enumerate(source_list):
                 url, type = src
@@ -486,7 +486,7 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
                 else:
                     logger.info("\t\t: " + file_name + " -> done({}/{}) , but convert failed".format(i + 1, work_num))
                 sleep(0.5)
-        elif work_num == 1:  # 単体
+        elif work_num == 1:  # 単一
             # {作者名}ディレクトリ作成
             sd_path.parent.mkdir(parents=True, exist_ok=True)
 

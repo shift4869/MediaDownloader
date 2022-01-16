@@ -44,26 +44,32 @@ class TestLSSkeb(unittest.TestCase):
         if self.TBP.is_dir():
             shutil.rmtree(self.TBP)
 
-    def __GetSkebData(self, author_name: str, work_id: int, type: str) -> dict:
+    def __GetSkebData(self, work_id: int) -> dict:
         """テスト用の情報を作成する
 
         Args:
-            author_name (str): 作者名
-            work_id (int): 作品ID (0 < work_id < 99999999)
-            type (str): リソースタイプ
+            work_id (int): 作品ID (0 < work_id < 999)
 
         Returns:
             dict: 作品IDで示される作品情報を表す辞書（キーはcolsを参照）
         """
         idstr = str(work_id)
-        url = ""
-        if type == "illust":
-            url = "https://skeb.imgix.net/uploads/origins/xxx?yyy"
-        if type == "video":
-            url = "https://skeb-production.xx.xxxxx.xxxxxxxxx/uploads/outputs/xxx?yyy"
+        type_dict = {
+            "1": "illust",
+            "2": "gif",
+            "3": "video",
+        }
+        type = type_dict.get(idstr, "")
+
+        url_dict = {
+            "illust": "https://skeb.imgix.net/uploads/origins/xxx?yyy",
+            "gif": "https://skeb.imgix.net/uploads/origins/xxx?yyy",
+            "video": "https://skeb-production.xx.xxxxx.xxxxxxxxx/uploads/outputs/xxx?yyy",
+        }
+        url = url_dict.get(type, "")
 
         cols = ["id", "url", "author_name", "type"]
-        data = [idstr, url, author_name, type]
+        data = [idstr, url, "author_1", type]
         res = {}
         for c, d in zip(cols, data):
             res[c] = d
@@ -392,11 +398,11 @@ class TestLSSkeb(unittest.TestCase):
             lssk_cont = LSSkeb.LSSkeb(self.twitter_id, self.twitter_password, self.TEST_BASE_PATH)
 
             # 正常系
-            e_author_name = "author_name"
-            e_work_id = random.randint(1, 100)
-            url_s = f"https://skeb.jp/@{e_author_name}/works/{e_work_id}"
+            author_name_s = "author_name"
+            work_id_s = random.randint(1, 100)
+            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
             actual = lssk_cont.GetUserWorkID(url_s)
-            self.assertEqual((e_author_name, e_work_id), actual)
+            self.assertEqual((author_name_s, work_id_s), actual)
 
             # 異常系
             # 全く関係ないアドレス(Google)
@@ -412,8 +418,128 @@ class TestLSSkeb(unittest.TestCase):
             mockgt = self.__MakeGetTokenMock(mockgt)
             lssk_cont = LSSkeb.LSSkeb(self.twitter_id, self.twitter_password, self.TEST_BASE_PATH)
 
+            def ReturnImage(target_path):
+                r = MagicMock()
+                type(r).convert = lambda s, m: r
+                type(r).save = lambda s, fp: fp.touch()
+                return r if target_path.is_file() else None
+            mockimg = stack.enter_context(patch("MediaDownloader.LSSkeb.Image.open"))
+            mockimg.side_effect = ReturnImage
+
             # 正常系
-            actual = lssk_cont.ConvertWebp
+            EXT = ".png"
+            self.TBP.mkdir(exist_ok=True, parents=True)
+            e_target_path = self.TBP / "illust.webp"
+            e_target_path.touch()
+            expect = str(e_target_path.with_suffix(EXT))
+            actual = lssk_cont.ConvertWebp(e_target_path)
+            self.assertIsNotNone(actual)
+            self.assertTrue(actual.is_file())
+            self.assertFalse(e_target_path.is_file())
+            self.assertEqual(expect, str(actual))
+
+            # 異常系
+            # 存在しないファイルを指定
+            self.TBP.mkdir(exist_ok=True, parents=True)
+            e_target_path = self.TBP / "illust.webp"
+            e_target_path.unlink(missing_ok=True)
+            actual = lssk_cont.ConvertWebp(e_target_path)
+            self.assertIsNone(actual)
+
+    def test_GetWorkURLs(self):
+        """Skeb作品ページURLから作品URLを取得する機能をチェック
+        """
+        with ExitStack() as stack:
+            mockle = stack.enter_context(patch.object(logger, "error"))
+            mocksession = stack.enter_context(patch("MediaDownloader.LSSkeb.HTMLSession"))
+            mockgt = stack.enter_context(patch("MediaDownloader.LSSkeb.LSSkeb.GetToken"))
+            mockgt = self.__MakeGetTokenMock(mockgt)
+            lssk_cont = LSSkeb.LSSkeb(self.twitter_id, self.twitter_password, self.TEST_BASE_PATH)
+
+            work_id_s = 1
+
+            def ReturnSession():
+                response = MagicMock()
+
+                def ReturnGet(s, url, headers):
+                    r_get = MagicMock()
+
+                    def ReturnFind(key):
+                        r_find = MagicMock()
+                        sd = self.__GetSkebData(work_id_s)
+
+                        if work_id_s == 1 and key == "img":
+                            # イラスト
+                            r_find.attrs = {"src": sd.get("url", "")}
+                        elif work_id_s == 2 and key == "video":
+                            # gif
+                            r_find.attrs = {
+                                "preload": "auto",
+                                "autoplay": "autoplay",
+                                "muted": "muted",
+                                "loop": "loop",
+                                "src": sd.get("url", "")
+                            }
+                        elif work_id_s == 3 and key == "source":
+                            # 動画
+                            r_find.attrs = {
+                                "type": "video/mp4",
+                                "src": sd.get("url", "")
+                            }
+                        else:
+                            return []
+
+                        return [r_find]
+
+                    r_get.html.find = ReturnFind
+                    return r_get
+
+                type(response).get = ReturnGet
+                return response
+
+            # 正常系
+            # イラスト
+            mocksession.side_effect = ReturnSession
+            author_name_s = "author_1"
+            work_id_s = 1
+            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
+            sd = self.__GetSkebData(work_id_s)
+            expect = [(sd.get("url", ""), "illust")]
+            actual = lssk_cont.GetWorkURLs(url_s)
+            self.assertEqual(expect, actual)
+
+            # gif
+            work_id_s = 2
+            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
+            sd = self.__GetSkebData(work_id_s)
+            expect = [(sd.get("url", ""), "video")]
+            actual = lssk_cont.GetWorkURLs(url_s)
+            self.assertEqual(expect, actual)
+
+            # 動画
+            work_id_s = 3
+            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
+            sd = self.__GetSkebData(work_id_s)
+            expect = [(sd.get("url", ""), "video")]
+            actual = lssk_cont.GetWorkURLs(url_s)
+            self.assertEqual(expect, actual)
+
+            # どのリソースも取得できなかった
+            work_id_s = 4
+            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
+            expect = []
+            actual = lssk_cont.GetWorkURLs(url_s)
+            self.assertEqual(expect, actual)
+
+            # 異常系
+            # URLが不正
+            work_id_s = 1
+            url_s = f"https://skeb.jp/invalid_url/{work_id_s}"
+            expect = []
+            actual = lssk_cont.GetWorkURLs(url_s)
+            self.assertEqual(expect, actual)
+
+            pass
 
     def test_MakeSaveDirectoryPath(self):
         """保存先ディレクトリパスを生成する機能をチェック
@@ -423,14 +549,51 @@ class TestLSSkeb(unittest.TestCase):
             mockgt = self.__MakeGetTokenMock(mockgt)
             lssk_cont = LSSkeb.LSSkeb(self.twitter_id, self.twitter_password, self.TEST_BASE_PATH)
 
-    def test_DownloadSkeb(self):
-        """作品作品をダウンロードする機能をチェック
-            実際に非公式pixivAPIを通してDLはしない
+            # 正常系
+            author_name_s = "author_1"
+            work_id_s = 1
+            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
+            expect = self.TBP / author_name_s / f"{work_id_s:03}"
+            actual = lssk_cont.MakeSaveDirectoryPath(url_s, self.TBP)
+            self.assertEqual(str(expect), actual)
+
+            # 異常系
+            # 不正なURL
+            url_s = f"https://skeb.jp/invalid_url"
+            actual = lssk_cont.MakeSaveDirectoryPath(url_s, self.TBP)
+            self.assertEqual("", actual)
+
+    def test_DownloadWorks(self):
+        """作品をダウンロードする機能をチェック
+           実際にアクセスしてDLはしない
         """
         with ExitStack() as stack:
+            # open()をモックに置き換える
+            mockfout = mock_open()
+            mockfp = stack.enter_context(patch("pathlib.Path.open", mockfout))
+            mockle = stack.enter_context(patch.object(logger, "error"))
+            mockli = stack.enter_context(patch.object(logger, "info"))
+            mockrequest = stack.enter_context(patch("MediaDownloader.LSSkeb.requests.get"))
             mockgt = stack.enter_context(patch("MediaDownloader.LSSkeb.LSSkeb.GetToken"))
             mockgt = self.__MakeGetTokenMock(mockgt)
             lssk_cont = LSSkeb.LSSkeb(self.twitter_id, self.twitter_password, self.TEST_BASE_PATH)
+
+            def ReturnGet(url, headers):
+                response = MagicMock()
+                type(response).content = str(url).encode()
+                return response
+
+            # 正常系
+            # 複数作品新規DL
+            mockrequest.side_effect = ReturnGet
+            author_name_s = "author_1"
+            work_id_s = 1
+            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
+            save_directory_path = lssk_cont.MakeSaveDirectoryPath(url_s, self.TBP)
+            source_list_e = [(f"https://skeb.imgix.net/uploads/origins/{i:03}_xxx?yyy", "illust") for i in range(1, 3)]
+            actual = lssk_cont.DownloadWorks(source_list_e, save_directory_path)
+            self.assertEqual(0, actual)
+            pass
 
 
 if __name__ == "__main__":
