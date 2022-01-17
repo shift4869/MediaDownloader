@@ -435,7 +435,6 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
         Returns:
             int: DL成功時0、スキップされた場合1、エラー時-1
         """
-        EXT = ".png"
         sd_path = Path(save_directory_path)
         author_name = sd_path.parent.name
         work_id = int(sd_path.name)
@@ -457,16 +456,20 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             for i, src in enumerate(source_list):
                 url, type = src
 
-                ext = ""
-                if type == "illust":
-                    ext = ".webp"
-                elif type == "video":
-                    ext = ".mp4"
-                else:
+                # 変換処理用辞書
+                # 変換処理が必要かどうか(Trueなら変換する), 変換前拡張子, 変換後拡張子
+                p_dict = {
+                    "illust": (True, ".webp", ".png"),
+                    "video": (False, ".mp4", ".mp4"),
+                }
+                p = p_dict.get(type)
+                if not p:
                     logger.error(f"\t\t: {author_name}_{work_id:03}: {type} is invalid")
                     return -1
+                src_ext = p[1]
+                dst_ext = p[2]
 
-                file_name = f"{author_name}_{work_id:03}_{i:03}{ext}"
+                file_name = f"{author_name}_{work_id:03}_{i:03}{src_ext}"
 
                 res = requests.get(url, headers=self.headers)
                 res.raise_for_status()
@@ -474,10 +477,10 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
                 with Path(sd_path / file_name).open(mode="wb") as fout:
                     fout.write(res.content)
 
+                # 変換が必要なら行う(.webp->.png)
                 dst_path = None
-                if type == "illust":
-                    ext = EXT
-                    dst_path = self.ConvertWebp(sd_path / file_name, ext)
+                if p[0]:
+                    dst_path = self.ConvertWebp(sd_path / file_name, dst_ext)
                 else:
                     dst_path = sd_path / file_name
 
@@ -493,16 +496,20 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             # ファイル名設定
             url, type = source_list[0]
 
-            ext = ""
-            if type == "illust":
-                ext = ".webp"
-            elif type == "video":
-                ext = ".mp4"
-            else:
+            # 変換処理用辞書
+            # 変換処理が必要かどうか(Trueなら変換する), 変換前拡張子, 変換後拡張子
+            p_dict = {
+                "illust": (True, ".webp", ".png"),
+                "video": (False, ".mp4", ".mp4"),
+            }
+            p = p_dict.get(type)
+            if not p:
                 logger.error(f"\t\t: {author_name}_{work_id:03}: {type} is invalid")
                 return -1
+            src_ext = p[1]
+            dst_ext = p[2]
 
-            file_name = f"{author_name}_{work_id:03}{ext}"
+            file_name = f"{author_name}_{work_id:03}{dst_ext}"
 
             # 既に存在しているなら再DLしないでスキップ
             if (sd_path.parent / file_name).is_file():
@@ -514,14 +521,14 @@ class LSSkeb(LinkSearchBase.LinkSearchBase):
             res.raise_for_status()
 
             # {作者名}ディレクトリ直下に保存
+            file_name = f"{author_name}_{work_id:03}{src_ext}"
             with Path(sd_path.parent / file_name).open(mode="wb") as fout:
                 fout.write(res.content)
 
-            # 変換
+            # 変換が必要なら行う(.webp->.png)
             dst_path = None
-            if type == "illust":
-                ext = EXT
-                dst_path = self.ConvertWebp(sd_path.parent / file_name, ext)
+            if p[0]:
+                dst_path = self.ConvertWebp(sd_path.parent / file_name, dst_ext)
             else:
                 dst_path = sd_path.parent / file_name
 
@@ -550,11 +557,11 @@ if __name__ == "__main__":
     sc = LSSkeb(config["skeb"]["twitter_id"], config["skeb"]["twitter_password"], config["skeb"]["save_base_path"])
 
     # イラスト（複数）
-    # work_url = "https://skeb.jp/@matsukitchi12/works/25"
+    work_url = "https://skeb.jp/@matsukitchi12/works/25"
     # 動画（単体）
     # work_url = "https://skeb.jp/@wata_lemon03/works/7"
     # gif画像（複数）
-    work_url = "https://skeb.jp/@_sa_ya_/works/55"
+    # work_url = "https://skeb.jp/@_sa_ya_/works/55"
     sc.Process(work_url)
 
     pass

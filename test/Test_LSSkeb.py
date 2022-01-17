@@ -8,11 +8,8 @@ import unittest
 import warnings
 from contextlib import ExitStack
 from logging import WARNING, getLogger
-from mock import MagicMock, AsyncMock, PropertyMock, mock_open, patch
+from mock import MagicMock, AsyncMock, mock_open, patch
 from pathlib import Path
-from time import sleep
-
-from bs4 import BeautifulSoup
 
 from MediaDownloader import LSSkeb
 
@@ -569,30 +566,132 @@ class TestLSSkeb(unittest.TestCase):
         """
         with ExitStack() as stack:
             # open()をモックに置き換える
-            mockfout = mock_open()
-            mockfp = stack.enter_context(patch("pathlib.Path.open", mockfout))
+            # mockfout = mock_open()
+            # mockfp = stack.enter_context(patch("pathlib.Path.open", mockfout))
             mockle = stack.enter_context(patch.object(logger, "error"))
             mockli = stack.enter_context(patch.object(logger, "info"))
             mockrequest = stack.enter_context(patch("MediaDownloader.LSSkeb.requests.get"))
+            mockcw = stack.enter_context(patch("MediaDownloader.LSSkeb.LSSkeb.ConvertWebp"))
             mockgt = stack.enter_context(patch("MediaDownloader.LSSkeb.LSSkeb.GetToken"))
             mockgt = self.__MakeGetTokenMock(mockgt)
             lssk_cont = LSSkeb.LSSkeb(self.twitter_id, self.twitter_password, self.TEST_BASE_PATH)
+
+            # 正常系
+            # サイドエフェクト設定
+            def ReturnConvertWebp(target_path: Path, ext: str = ".png"):
+                dst_path = target_path.with_suffix(ext)
+                shutil.copy(target_path, dst_path)
+                target_path.unlink(missing_ok=True)
+                return dst_path
 
             def ReturnGet(url, headers):
                 response = MagicMock()
                 type(response).content = str(url).encode()
                 return response
 
-            # 正常系
-            # 複数作品新規DL
+            mockcw.side_effect = ReturnConvertWebp
             mockrequest.side_effect = ReturnGet
-            author_name_s = "author_1"
-            work_id_s = 1
-            url_s = f"https://skeb.jp/@{author_name_s}/works/{work_id_s}"
-            save_directory_path = lssk_cont.MakeSaveDirectoryPath(url_s, self.TBP)
-            source_list_e = [(f"https://skeb.imgix.net/uploads/origins/{i:03}_xxx?yyy", "illust") for i in range(1, 3)]
-            actual = lssk_cont.DownloadWorks(source_list_e, save_directory_path)
-            self.assertEqual(0, actual)
+
+            # 検証用作者アカウント名等設定
+            NUM = 3  # 検証用作者アカウント数
+            work_id = 0  # 作品id（インクリメントされる）
+            # 変換処理用辞書
+            p_dict = {
+                "illust": (True, ".webp", ".png"),
+                "video": (False, ".mp4", ".mp4"),
+            }
+            # 検証用作者名リスト
+            author_name_list = [f"author_{i}" for i in range(1, NUM + 1)]
+            # タイプリスト
+            type_list = ["illust", "video"]
+            # すべての検証用作者アカウント,タイプについて検証する
+            for author_name in author_name_list:
+                for type_s in type_list:
+                    # 単一作品と複数作品について検証する
+                    urls_list = [
+                        ["https://skeb.resource.test/001_xxx?yyy"],  # 単一
+                        [f"https://skeb.resource.test/{i:03}_xxx?yyy" for i in range(1, random.randint(3, NUM + 3))],  # 複数
+                    ]
+                    for urls in urls_list:
+                        # source_list設定
+                        # work_id = random.randint(1, NUM * 2)
+                        work_id = work_id + 1
+                        dst_ext = p_dict.get(type_s, (False, "", ""))[2]
+                        source_list_s = [(url, type_s) for url in urls]
+
+                        # save_directory_path設定
+                        url_s = f"https://skeb.jp/@{author_name}/works/{work_id}"
+                        save_directory_path = lssk_cont.MakeSaveDirectoryPath(url_s, self.TBP)
+                        sd_path = Path(save_directory_path)
+
+                        # 1回目の実行
+                        actual = lssk_cont.DownloadWorks(source_list_s, save_directory_path)
+                        self.assertEqual(0, actual)
+
+                        # DL後のディレクトリ構成とファイルの存在チェック
+                        sd_path = Path(save_directory_path)
+                        if len(source_list_s) > 1:
+                            # 複数作品
+                            expect_names = []
+                            for i, src in enumerate(source_list_s):
+                                file_name = f"{author_name}_{work_id:03}_{i:03}{dst_ext}"
+                                expect_names.append(file_name)
+
+                            self.assertTrue(self.TBP.is_dir())
+                            self.assertTrue(sd_path.is_dir())
+                            for name_s in expect_names:
+                                self.assertTrue((sd_path / name_s).is_file())
+                        else:
+                            # 単一作品
+                            file_name = f"{author_name}_{work_id:03}{dst_ext}"
+                            self.assertTrue(self.TBP.is_dir())
+                            self.assertTrue(sd_path.parent.is_dir())
+                            self.assertTrue((sd_path.parent / file_name).is_file())
+
+                        # requests.getが呼ばれたかどうか確認
+                        mockrequest.assert_called()
+                        mockrequest.reset_mock()
+
+                        # 変換処理をする設定なら変換処理が呼ばれたかどうか確認
+                        if p_dict.get(type_s, (False, "", ""))[0]:
+                            mockcw.assert_called()
+                            mockcw.reset_mock()
+                        else:
+                            mockcw.assert_not_called()
+
+                        # 2回目の実行
+                        actual = lssk_cont.DownloadWorks(source_list_s, save_directory_path)
+                        self.assertEqual(1, actual)
+                        pass
+
+            # 異常系
+            # requests.getに失敗
+            def ReturnGetFailed(url, headers):
+                response = MagicMock()
+                response.raise_for_status.side_effect = Exception("Mock Exception")
+                return response
+
+            mockrequest.side_effect = ReturnGetFailed
+            urls_list = [
+                ["https://skeb.resource.test/001_xxx?yyy"],  # 単一
+                [f"https://skeb.resource.test/{i:03}_xxx?yyy" for i in range(1, random.randint(3, NUM + 3))],  # 複数
+            ]
+            for urls in urls_list:
+                source_list_s = [(url, "illust") for url in urls]
+                url_s = f"https://skeb.jp/@author_1/works/99"
+                save_directory_path = lssk_cont.MakeSaveDirectoryPath(url_s, self.TBP)
+                with self.assertRaises(Exception):
+                    actual = lssk_cont.DownloadWorks(source_list_s, save_directory_path)
+
+            # タイプが不正
+            mockrequest.side_effect = ReturnGet
+            for urls in urls_list:
+                source_list_s = [(url, "invlid_type") for url in urls]
+                url_s = f"https://skeb.jp/@author_2/works/99"
+                save_directory_path = lssk_cont.MakeSaveDirectoryPath(url_s, self.TBP)
+
+                actual = lssk_cont.DownloadWorks(source_list_s, save_directory_path)
+                self.assertEqual(-1, actual)
             pass
 
 
