@@ -12,6 +12,7 @@ PySimpleGUIを使用してGUIでの操作を前提とする。
     - pixiv（小説）  
     - nijie（一枚絵、複数形式）  
     - ニコニコ静画（一枚絵）  
+    - Skeb（単一/複数作品のイラスト/動画/gif）  
 
 - サンプルURLは以下の形式
 ```
@@ -19,6 +20,7 @@ PySimpleGUIを使用してGUIでの操作を前提とする。
 "pixiv novel": "https://www.pixiv.net/novel/show.php?id=xxxxxxxx",
 "nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
 "seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
+"skeb": "https://skeb.jp/@xxxxxxxx/works/xx",
 ```
 
 
