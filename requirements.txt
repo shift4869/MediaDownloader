@@ -12,6 +12,7 @@ pyppeteer==0.2.6
 PySimpleGUI == 4.41.2
 pywin32 == 301
 requests == 2.25.1
+requests-html==0.10.0
 scipy == 1.6.3
 setuptools == 56.0.0
 urllib3 == 1.26.4
