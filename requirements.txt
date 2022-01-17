@@ -8,6 +8,7 @@ opencv_python == 4.5.2.52
 pandas == 1.2.4
 Pillow == 8.1.2
 PixivPy == 3.5.11
+pyppeteer==0.2.6
 PySimpleGUI == 4.41.2
 pywin32 == 301
 requests == 2.25.1
