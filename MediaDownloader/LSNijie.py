@@ -159,11 +159,11 @@ class LSNijie(LinkSearchBase.LinkSearchBase):
         Returns:
             boolean: nijie作品ページURLならTrue、そうでなければFalse
         """
-        pattern = r"^http://nijie.info/view.php\?id=[0-9]+$"
+        pattern = r"^https://nijie.info/view.php\?id=[0-9]+$"
         regex = re.compile(pattern)
         f1 = not (regex.findall(url) == [])
 
-        pattern = r"^http://nijie.info/view_popup.php\?id=[0-9]+$"
+        pattern = r"^https://nijie.info/view_popup.php\?id=[0-9]+$"
         regex = re.compile(pattern)
         f2 = not (regex.findall(url) == [])
 
@@ -406,7 +406,7 @@ if __name__ == "__main__":
     # illust_id = 414793  # うごイラ一枚
     illust_id = 409587  # うごイラ複数
 
-    illust_url = "http://nijie.info/view_popup.php?id={}".format(illust_id)
+    illust_url = "https://nijie.info/view_popup.php?id={}".format(illust_id)
     nc.Process(illust_url)
 
     pass
