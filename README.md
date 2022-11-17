@@ -25,14 +25,15 @@ PySimpleGUIを使用してGUIでの操作を前提とする。
 
 
 ## 前提として必要なもの
-- Pythonの実行環境(3.9以上)
+- Pythonの実行環境(3.10以上)
 - 取得したい投稿サイトのアカウント情報
+- その他トークン、クッキー、ローカルストレージ情報
 
 
 ## 使い方
 1. config_example.iniを確認して使用するアカウント情報を記載してconfig.iniにリネーム
 1. python MediaDownloader.py
-1. GUIに従って対象サイト・作品URL・保存先を入力して実行
+1. GUIに従って作品URLを入力して実行
 
 
 ## License/Author
