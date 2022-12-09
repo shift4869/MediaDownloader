@@ -23,12 +23,25 @@ def gui_main():
         "skeb": "https://skeb.jp/@xxxxxxxx/works/xx",
     }
 
+    # configファイルロード
+    CONFIG_FILE_NAME = "./config/config.ini"
+    config = configparser.ConfigParser()
+    if not config.read(CONFIG_FILE_NAME, encoding="utf8"):
+        raise IOError
+
     # ウィンドウのレイアウト
     layout = [
         [sg.Text("MediaDownloader")],
         # [sg.Text("対象サイト", size=(18, 1)), sg.Combo(target, key="-TARGET-", enable_events=True, default_value=target[0])],
         # [sg.Text("作品ページURL形式", size=(18, 1)), sg.Text(target_url_example[target[0]], key="-WORK_URL_SAMPLE-", size=(40, 1))],
         [sg.Text("作品ページURL", size=(18, 1)), sg.InputText(key="-WORK_URL-", default_text="")],
+        [
+            sg.Text("チェック対象", size=(18, 1)),
+            sg.Checkbox("pixiv", default=config["pixiv"].getboolean("is_pixiv_trace"), key="-CB_pixiv-"),
+            sg.Checkbox("nijie", default=config["nijie"].getboolean("is_nijie_trace"), key="-CB_nijie-"),
+            sg.Checkbox("nico_seiga", default=config["nico_seiga"].getboolean("is_seiga_trace"), key="-CB_nico_seiga-"),
+            sg.Checkbox("skeb", default=config["skeb"].getboolean("is_skeb_trace"), key="-CB_skeb-"),
+        ],
         # [sg.Text("保存先パス", size=(18, 1)), sg.InputText(key="-SAVE_PATH-", default_text=Path(__file__).parent),
         #  sg.FolderBrowse("参照", initial_folder=Path(__file__).parent, pad=((3, 0), (0, 0)))],
         [sg.Text("", size=(53, 1)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0))), sg.Button("終了", key="-EXIT-")],
@@ -55,14 +68,6 @@ def gui_main():
 
     print("---ここにログが表示されます---")
 
-    CONFIG_FILE_NAME = "./config/config.ini"
-    config = configparser.ConfigParser()
-    if not config.read(CONFIG_FILE_NAME, encoding="utf8"):
-        raise IOError
-
-    print("初期化中...")
-    ls = LinkSearcher.LinkSearcher.create(config)
-    print("初期化完了！")
     while True:
         event, values = window.read()
         if event in [sg.WIN_CLOSED, "-EXIT-"]:
@@ -76,6 +81,13 @@ def gui_main():
             # save_path = values["-SAVE_PATH-"]
 
             try:
+                print("初期化中...")
+                config["pixiv"]["is_pixiv_trace"] = "True" if values["-CB_pixiv-"] else "False"
+                config["nijie"]["is_nijie_trace"] = "True" if values["-CB_nijie-"] else "False"
+                config["nico_seiga"]["is_seiga_trace"] = "True" if values["-CB_nico_seiga-"] else "False"
+                config["skeb"]["is_skeb_trace"] = "True" if values["-CB_skeb-"] else "False"
+                ls = LinkSearcher.LinkSearcher.create(config)
+                print("初期化完了！")
                 ls.fetch(work_url)
             except Exception:
                 logger.info("Process failed...")
