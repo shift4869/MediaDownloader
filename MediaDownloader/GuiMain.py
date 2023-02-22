@@ -2,6 +2,7 @@
 import configparser
 import logging
 import logging.config
+import subprocess
 from logging import INFO, getLogger
 from pathlib import Path
 
@@ -29,6 +30,14 @@ def gui_main():
     if not config.read(CONFIG_FILE_NAME, encoding="utf8"):
         raise IOError
 
+    save_base_path = Path(__file__).parent
+    try:
+        save_base_path = Path(config["save_base_path"]["save_base_path"])
+    except Exception:
+        save_base_path = Path(__file__).parent
+    if not save_base_path.exists():
+        save_base_path.mkdir(parents=True, exist_ok=True)
+
     # ウィンドウのレイアウト
     layout = [
         [sg.Text("MediaDownloader")],
@@ -42,9 +51,10 @@ def gui_main():
             sg.Checkbox("nico_seiga", default=config["nico_seiga"].getboolean("is_seiga_trace"), key="-CB_nico_seiga-"),
             sg.Checkbox("skeb", default=config["skeb"].getboolean("is_skeb_trace"), key="-CB_skeb-"),
         ],
-        # [sg.Text("保存先パス", size=(18, 1)), sg.InputText(key="-SAVE_PATH-", default_text=Path(__file__).parent),
-        #  sg.FolderBrowse("参照", initial_folder=Path(__file__).parent, pad=((3, 0), (0, 0)))],
-        [sg.Text("", size=(53, 1)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0))), sg.Button("終了", key="-EXIT-")],
+        [sg.Text("保存先パス", size=(18, 1)), sg.InputText(key="-SAVE_PATH-", default_text=save_base_path),
+         sg.FolderBrowse("参照", initial_folder=save_base_path, pad=((3, 0), (0, 0))),
+         sg.Button("開く", key="-FOLDER_OPEN-", pad=((7, 2), (0, 0)))],
+        [sg.Text("", size=(53, 2)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0)))],
         [sg.Output(key="-OUTPUT-", size=(100, 10))],
     ]
 
@@ -76,10 +86,7 @@ def gui_main():
             work_kind = values["-TARGET-"]
             window["-WORK_URL_SAMPLE-"].update(target_url_example[work_kind])
         if event == "-RUN-":
-            # work_kind = values["-TARGET-"]
             work_url = values["-WORK_URL-"]
-            # save_path = values["-SAVE_PATH-"]
-
             try:
                 print("初期化中...")
                 config["pixiv"]["is_pixiv_trace"] = "True" if values["-CB_pixiv-"] else "False"
@@ -93,6 +100,9 @@ def gui_main():
                 logger.info("Process failed...")
             else:
                 logger.info("Process done: success!")
+        if event == "-FOLDER_OPEN-":
+            save_path = values["-SAVE_PATH-"]
+            subprocess.Popen(["explorer", save_path], shell=True)
 
     # ウィンドウ終了処理
     window.close()

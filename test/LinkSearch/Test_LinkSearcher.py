@@ -6,13 +6,12 @@
 import configparser
 import sys
 import unittest
-
 from contextlib import ExitStack
 from logging import WARNING, getLogger
+
 from mock import MagicMock, patch
 
 from MediaDownloader.LinkSearch.LinkSearcher import LinkSearcher
-
 
 logger = getLogger("MediaDownloader.LinkSearch.LinkSearcher")
 logger.setLevel(WARNING)
@@ -104,7 +103,7 @@ class TestLinkSearcher(unittest.TestCase):
 
             lsc = LinkSearcher.create(config)
 
-            REGISTER_NUM = 5
+            REGISTER_NUM = 4
             self.assertEqual(REGISTER_NUM, len(lsc.fetcher_list))
 
 
