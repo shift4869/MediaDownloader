@@ -55,7 +55,7 @@ def gui_main():
          sg.FolderBrowse("参照", initial_folder=save_base_path, pad=((3, 0), (0, 0))),
          sg.Button("開く", key="-FOLDER_OPEN-", pad=((7, 2), (0, 0)))],
         [sg.Text("", size=(53, 2)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0)))],
-        [sg.Output(key="-OUTPUT-", size=(100, 10))],
+        [sg.Multiline(key="-OUTPUT-", size=(100, 10), auto_refresh=True, autoscroll=True, reroute_stdout=True, reroute_stderr=True)],
     ]
 
     # アイコン画像取得
@@ -95,6 +95,7 @@ def gui_main():
                 config["skeb"]["is_skeb_trace"] = "True" if values["-CB_skeb-"] else "False"
                 ls = LinkSearcher.LinkSearcher.create(config)
                 print("初期化完了！")
+
                 ls.fetch(work_url)
             except Exception:
                 logger.info("Process failed...")
