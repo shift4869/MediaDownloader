@@ -1,12 +1,12 @@
 # coding: utf-8
-from dataclasses import dataclass
 import re
-from typing import Iterable
+from dataclasses import dataclass
 from pathlib import Path
-
-from requests_html import AsyncHTMLSession
+from typing import Iterable
 from urllib.parse import quote, unquote
+
 import pyppeteer
+from requests_html import AsyncHTMLSession
 
 from MediaDownloader.LinkSearch.Skeb.SaveFilename import Extension
 from MediaDownloader.LinkSearch.Skeb.SkebSession import SkebSession
@@ -136,14 +136,13 @@ class SkebSourceList(Iterable):
 
         # イラスト
         # imgタグ、src属性のリンクURL形式が次のいずれかの場合
-        # "https://skeb.imgix.net/uploads/"で始まる
-        # "https://skeb.imgix.net/requests/"で始まる
+        # TODO:対象URLの形式を正規表現でまとめる
         img_tags = response.html.find("img")
         for img_tag in img_tags:
             src_url = img_tag.attrs.get("src", "")
-            # src_url = unquote(src_url).replace("#", "%23")
             if "https://skeb.imgix.net/uploads/" in src_url or \
-               "https://skeb.imgix.net/requests/" in src_url:
+               "https://skeb.imgix.net/requests/" in src_url or \
+               "https://si.imgix.net/" in src_url:
                 source = SkebSourceInfo(URL(src_url), Extension.WEBP)
                 source_list.append(source)
 
@@ -181,6 +180,7 @@ if __name__ == "__main__":
     import configparser
     import logging.config
     from pathlib import Path
+
     from MediaDownloader.LinkSearch.Password import Password
     from MediaDownloader.LinkSearch.Skeb.SkebFetcher import SkebFetcher
     from MediaDownloader.LinkSearch.Username import Username

@@ -77,14 +77,16 @@ if __name__ == "__main__":
     config.read(CONFIG_FILE_NAME, encoding="utf8")
 
     base_path = Path("./MediaDownloader/LinkSearch/")
-    if config["skeb"].getboolean("is_skeb_trace"):
-        fetcher = SkebFetcher(Username(config["skeb"]["twitter_id"]), Password(config["skeb"]["twitter_password"]), base_path)
+    username = Username(config["skeb"]["twitter_id"])
+    password = Password(config["skeb"]["twitter_password"])
+    fetcher = SkebFetcher(username, password, base_path)
 
-        # イラスト（複数）
-        work_url = "https://skeb.jp/@matsukitchi12/works/25?query=1"
-        # 動画（単体）
-        # work_url = "https://skeb.jp/@wata_lemon03/works/7"
-        # gif画像（複数）
-        # work_url = "https://skeb.jp/@_sa_ya_/works/55"
+    # イラスト（複数）
+    work_url = "https://skeb.jp/@matsukitchi12/works/25?query=1"
+    # 動画（単体）
+    # work_url = "https://skeb.jp/@wata_lemon03/works/7"
+    # gif画像（複数）
+    # work_url = "https://skeb.jp/@_sa_ya_/works/55"
+    work_url = "https://skeb.jp/@gkr16d/works/7"
 
-        fetcher.fetch(work_url)
+    fetcher.fetch(work_url)
