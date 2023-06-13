@@ -91,10 +91,16 @@ class NijiePageInfo():
         author_id = int(pt)
 
         # 作品タイトル、作者名はページタイトルから取得する
+        # サニタイズもここで行う
+        def sanitize(s: str, chars: str) -> str:
+            for c in chars:
+                s = s.replace(c, "")
+            return s
+        SANITIZE_CHARS = '\\/:*?"<>|'
         title_tag = soup.find("title")
         title = title_tag.text.split("|")
-        illust_name = title[0].strip()
-        author_name = title[1].strip()
+        illust_name = sanitize(title[0].strip(), SANITIZE_CHARS)
+        author_name = sanitize(title[1].strip(), SANITIZE_CHARS)
 
         # ValueObject 変換
         urls = NijieSourceList.create(urls)
