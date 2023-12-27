@@ -21,7 +21,7 @@ def gui_main():
         "pixiv novel": "https://www.pixiv.net/novel/show.php?id=xxxxxxxx",
         "nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
         "seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
-        "skeb": "https://skeb.jp/@xxxxxxxx/works/xx",
+        # "skeb": "https://skeb.jp/@xxxxxxxx/works/xx",
     }
 
     # configファイルロード
@@ -49,7 +49,7 @@ def gui_main():
             sg.Checkbox("pixiv", default=config["pixiv"].getboolean("is_pixiv_trace"), key="-CB_pixiv-"),
             sg.Checkbox("nijie", default=config["nijie"].getboolean("is_nijie_trace"), key="-CB_nijie-"),
             sg.Checkbox("nico_seiga", default=config["nico_seiga"].getboolean("is_seiga_trace"), key="-CB_nico_seiga-"),
-            sg.Checkbox("skeb", default=config["skeb"].getboolean("is_skeb_trace"), key="-CB_skeb-"),
+            # sg.Checkbox("skeb", default=config["skeb"].getboolean("is_skeb_trace"), key="-CB_skeb-"),
         ],
         [sg.Text("保存先パス", size=(18, 1)), sg.InputText(key="-SAVE_PATH-", default_text=save_base_path),
          sg.FolderBrowse("参照", initial_folder=save_base_path, pad=((3, 0), (0, 0))),
@@ -60,9 +60,7 @@ def gui_main():
 
     # アイコン画像取得
     ICON_PATH = "./image/icon.png"
-    icon_binary = None
-    with Path(ICON_PATH).open("rb") as fin:
-        icon_binary = fin.read()
+    icon_binary = Path(ICON_PATH).read_bytes()
 
     # ウィンドウオブジェクトの作成
     window = sg.Window("MediaDownloader", layout, icon=icon_binary, size=(640, 320), finalize=True)
@@ -92,7 +90,7 @@ def gui_main():
                 config["pixiv"]["is_pixiv_trace"] = "True" if values["-CB_pixiv-"] else "False"
                 config["nijie"]["is_nijie_trace"] = "True" if values["-CB_nijie-"] else "False"
                 config["nico_seiga"]["is_seiga_trace"] = "True" if values["-CB_nico_seiga-"] else "False"
-                config["skeb"]["is_skeb_trace"] = "True" if values["-CB_skeb-"] else "False"
+                # config["skeb"]["is_skeb_trace"] = "True" if values["-CB_skeb-"] else "False"
                 ls = LinkSearcher.LinkSearcher.create(config)
                 print("初期化完了！")
 

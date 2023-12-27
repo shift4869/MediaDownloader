@@ -137,4 +137,5 @@ if __name__ == "__main__":
     if config["pixiv"].getboolean("is_pixiv_trace"):
         pa_cont = PixivFetcher(Username(config["pixiv"]["username"]), Password(config["pixiv"]["password"]), base_path)
         work_url = "https://www.pixiv.net/artworks/86704541"
+        work_url = "https://www.pixiv.net/artworks/113310737"
         pa_cont.fetch(work_url)
