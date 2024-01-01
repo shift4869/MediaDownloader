@@ -1,4 +1,3 @@
-# coding: utf-8
 import enum
 from dataclasses import dataclass
 from logging import INFO, getLogger
@@ -22,12 +21,12 @@ class DownloadResult(enum.Enum):
 
 
 @dataclass(frozen=True)
-class PixivUgoiraDownloader():
-    """うごイラをDLするクラス
-    """
+class PixivUgoiraDownloader:
+    """うごイラをDLするクラス"""
+
     aapi: AppPixivAPI  # 非公式pixivAPI操作インスタンス
-    work_id: Workid    # 作品ID
-    base_path: Path    # 保存ディレクトリベースパス
+    work_id: Workid  # 作品ID
+    base_path: Path  # 保存ディレクトリベースパス
 
     def __post_init__(self):
         self._is_valid()
@@ -62,7 +61,7 @@ class PixivUgoiraDownloader():
 
         if work.type != "ugoira":
             return DownloadResult.PASSED  # うごイラではなかった
-        
+
         logger.info("\t\t: ugoira download -> see below ...")
 
         # ValueObject生成
@@ -86,7 +85,7 @@ class PixivUgoiraDownloader():
             self.aapi.download(frame_url, path=str(sd_path))
             logger.info("\t\t: " + frame_url.rsplit("/", 1)[1] + " -> done({}/{})".format(i + 1, frames_len))
             sleep(0.5)
-        
+
         # DLした各フレーム画像のパスを収集
         frames = []
         fr = [(sp.stat().st_mtime, str(sp)) for sp in sd_path.glob("*") if sp.is_file()]
@@ -109,7 +108,7 @@ class PixivUgoiraDownloader():
             append_images=image_list,
             optimize=False,
             duration=delays,
-            loop=0
+            loop=0,
         )
         logger.info("\t\t: animated gif saved: " + name + " -> done")
         return DownloadResult.SUCCESS
@@ -118,9 +117,9 @@ class PixivUgoiraDownloader():
 if __name__ == "__main__":
     import configparser
     import logging.config
-    from media_downloader.link_search.Password import Password
-    from media_downloader.link_search.Pixiv.PixivFetcher import PixivFetcher
-    from media_downloader.link_search.Username import Username
+    from media_downloader.link_search.password import Password
+    from media_downloader.link_search.pixiv.pixiv_fetcher import PixivFetcher
+    from media_downloader.link_search.username import Username
 
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
     CONFIG_FILE_NAME = "./config/config.ini"

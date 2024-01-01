@@ -1,4 +1,3 @@
-# coding: utf-8
 from dataclasses import dataclass
 
 import requests
@@ -6,11 +5,11 @@ import requests.cookies
 
 
 @dataclass(frozen=True)
-class NijieCookie():
-    """nijieのクッキー
-    """
+class NijieCookie:
+    """nijieのクッキー"""
+
     _cookies: requests.cookies.RequestsCookieJar  # クッキー
-    _headers: dict                                # ヘッダー
+    _headers: dict  # ヘッダー
 
     # nijieトップページ
     NIJIE_TOP_URL = "http://nijie.info/index.php"
@@ -41,9 +40,9 @@ class NijieCookie():
 if __name__ == "__main__":
     import configparser
     from pathlib import Path
-    from media_downloader.link_search.Password import Password
-    from media_downloader.link_search.Nijie.NijieFetcher import NijieFetcher
-    from media_downloader.link_search.Username import Username
+    from media_downloader.link_search.password import Password
+    from media_downloader.link_search.nijie.nijie_fetcher import NijieFetcher
+    from media_downloader.link_search.username import Username
 
     CONFIG_FILE_NAME = "./config/config.ini"
     config = configparser.ConfigParser()

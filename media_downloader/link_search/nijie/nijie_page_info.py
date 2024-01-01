@@ -1,4 +1,3 @@
-# coding: utf-8
 import urllib.parse
 from dataclasses import dataclass
 
@@ -11,16 +10,17 @@ from media_downloader.link_search.Nijie.Worktitle import Worktitle
 
 
 @dataclass(frozen=True)
-class NijiePageInfo():
+class NijiePageInfo:
     """NijiePageInfo
 
     Returns:
         NijiePageInfo: NijiePageInfoを表すValueObject
     """
-    urls: NijieSourceList    # nijie作品直リンクリスト
+
+    urls: NijieSourceList  # nijie作品直リンクリスト
     author_name: Authorname  # 作者名
-    author_id: Authorid      # 作者ID
-    work_title: Worktitle    # 作品名
+    author_id: Authorid  # 作者ID
+    work_title: Worktitle  # 作品名
 
     def __post_init__(self) -> None:
         """初期化処理
@@ -96,6 +96,7 @@ class NijiePageInfo():
             for c in chars:
                 s = s.replace(c, "")
             return s
+
         SANITIZE_CHARS = '\\/:*?"<>|'
         title_tag = soup.find("title")
         title = title_tag.text.split("|")
@@ -114,9 +115,9 @@ class NijiePageInfo():
 if __name__ == "__main__":
     import configparser
     from pathlib import Path
-    from media_downloader.link_search.Password import Password
-    from media_downloader.link_search.Nijie.NijieFetcher import NijieFetcher
-    from media_downloader.link_search.Username import Username
+    from media_downloader.link_search.password import Password
+    from media_downloader.link_search.nijie.nijie_fetcher import NijieFetcher
+    from media_downloader.link_search.username import Username
 
     CONFIG_FILE_NAME = "./config/config.ini"
     config = configparser.ConfigParser()

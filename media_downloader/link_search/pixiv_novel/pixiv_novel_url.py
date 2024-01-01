@@ -1,14 +1,13 @@
-# coding: utf-8
 import re
 import urllib.parse
 from dataclasses import dataclass
 
 from media_downloader.link_search.pixiv_novel.Novelid import Novelid
-from media_downloader.link_search.URL import URL
+from media_downloader.link_search.url import URL
 
 
 @dataclass
-class PixivNovelURL():
+class PixivNovelURL:
     """PixivNovelURL
 
     PixivNovelURL を表す文字列を受け取る
@@ -20,6 +19,7 @@ class PixivNovelURL():
     Returns:
         PixivNovelURL: PixivNovelURLを表すValueObject
     """
+
     url: URL
 
     PIXIV_NOVEL_URL_PATTERN = r"^https://www.pixiv.net/novel/show.php\?id=[0-9]+"
@@ -35,8 +35,7 @@ class PixivNovelURL():
 
     @property
     def novel_id(self) -> Novelid:
-        """ノベルIDを返す
-        """
+        """ノベルIDを返す"""
         original_url = self.url.original_url
         q = urllib.parse.urlparse(original_url).query
         qs = urllib.parse.parse_qs(q)
@@ -45,14 +44,12 @@ class PixivNovelURL():
 
     @property
     def non_query_url(self) -> str:
-        """クエリなしURLを返す
-        """
+        """クエリなしURLを返す"""
         return self.url.non_query_url
 
     @property
     def original_url(self) -> str:
-        """元のURLを返す
-        """
+        """元のURLを返す"""
         return self.url.original_url
 
     @classmethod

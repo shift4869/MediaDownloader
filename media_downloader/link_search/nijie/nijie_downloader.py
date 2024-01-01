@@ -1,4 +1,3 @@
-# coding: utf-8
 import enum
 from dataclasses import dataclass
 from logging import INFO, getLogger
@@ -24,11 +23,11 @@ class DownloadResult(enum.Enum):
 
 
 @dataclass(frozen=True)
-class NijieDownloader():
-    """nijie作品をDLするクラス
-    """
-    nijie_url: NijieURL   # nijie作品ページURL
-    base_path: Path       # 保存ディレクトリベースパス
+class NijieDownloader:
+    """nijie作品をDLするクラス"""
+
+    nijie_url: NijieURL  # nijie作品ページURL
+    base_path: Path  # 保存ディレクトリベースパス
     cookies: NijieCookie  # nijieのクッキー
 
     def __post_init__(self):
@@ -44,8 +43,7 @@ class NijieDownloader():
         return True
 
     def download(self) -> DownloadResult:
-        """nijie作品ページURLから作品をダウンロードしてbase_path以下に保存する
-        """
+        """nijie作品ページURLから作品をダウンロードしてbase_path以下に保存する"""
         work_id = self.nijie_url.work_id.id
 
         # 作品詳細ページをGET
@@ -123,9 +121,9 @@ class NijieDownloader():
 if __name__ == "__main__":
     import configparser
     import logging.config
-    from media_downloader.link_search.Password import Password
-    from media_downloader.link_search.Nijie.NijieFetcher import NijieFetcher
-    from media_downloader.link_search.Username import Username
+    from media_downloader.link_search.password import Password
+    from media_downloader.link_search.nijie.nijie_fetcher import NijieFetcher
+    from media_downloader.link_search.username import Username
 
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
     CONFIG_FILE_NAME = "./config/config.ini"

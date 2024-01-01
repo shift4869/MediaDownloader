@@ -1,4 +1,3 @@
-# coding: utf-8
 import re
 import urllib.parse
 from dataclasses import dataclass
@@ -8,13 +7,13 @@ from pathlib import Path
 import requests
 import requests.cookies
 
-from media_downloader.link_search.FetcherBase import FetcherBase
+from media_downloader.link_search.fetcher_base import FetcherBase
 from media_downloader.link_search.Nijie.NijieCookie import NijieCookie
 from media_downloader.link_search.Nijie.NijieDownloader import NijieDownloader
 from media_downloader.link_search.Nijie.NijieURL import NijieURL
-from media_downloader.link_search.Password import Password
-from media_downloader.link_search.URL import URL
-from media_downloader.link_search.Username import Username
+from media_downloader.link_search.password import Password
+from media_downloader.link_search.url import URL
+from media_downloader.link_search.username import Username
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -22,13 +21,15 @@ logger.setLevel(INFO)
 
 @dataclass(frozen=True)
 class NijieFetcher(FetcherBase):
-    """nijie作品を取得するクラス
-    """
+    """nijie作品を取得するクラス"""
+
     cookies: NijieCookie  # nijieで使用するクッキー
-    base_path: Path       # 保存ディレクトリベースパス
+    base_path: Path  # 保存ディレクトリベースパス
 
     # 接続時に使用するヘッダー
-    HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"}
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"
+    }
     # ログイン情報を保持するクッキーファイル置き場
     NIJIE_COOKIE_PATH = "./config/nijie_cookie.ini"
 
@@ -106,13 +107,7 @@ class NijieFetcher(FetcherBase):
         url = qd["url"][0]
 
         # ログイン時に必要な情報
-        payload = {
-            "email": username.name,
-            "password": password.password,
-            "save": "on",
-            "ticket": "",
-            "url": url
-        }
+        payload = {"email": username.name, "password": password.password, "save": "on", "ticket": "", "url": url}
 
         # ログインする
         login_url = "https://nijie.info/login_int.php"
@@ -164,6 +159,7 @@ class NijieFetcher(FetcherBase):
 if __name__ == "__main__":
     import configparser
     import logging.config
+
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
     CONFIG_FILE_NAME = "./config/config.ini"
     config = configparser.ConfigParser()

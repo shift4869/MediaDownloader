@@ -1,12 +1,12 @@
-# coding: utf-8
 """Illustid のテスト
 
 作者IDを表すクラスをテストする
 """
+
 import sys
 import unittest
 
-from media_downloader.link_search.nico_seiga.Illustid import Illustid
+from media_downloader.link_search.nico_seiga.illustid import Illustid
 
 
 class TestIllustid(unittest.TestCase):

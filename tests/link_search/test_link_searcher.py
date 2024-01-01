@@ -1,8 +1,8 @@
-# coding: utf-8
 """LinkSearcher のテスト
 
 外部リンク探索クラスをテストする
 """
+
 import configparser
 import sys
 import unittest
@@ -90,9 +90,13 @@ class TestLinkSearcher(unittest.TestCase):
         with ExitStack() as stack:
             mock_notification = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.notification"))
             mock_pixiv_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.PixivFetcher"))
-            mock_pixiv_novel_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.PixivNovelFetcher"))
+            mock_pixiv_novel_fetcher = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.LinkSearcher.PixivNovelFetcher")
+            )
             mock_nijie_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.NijieFetcher"))
-            mock_nico_seiga_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.NicoSeigaFetcher"))
+            mock_nico_seiga_fetcher = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.LinkSearcher.NicoSeigaFetcher")
+            )
             # mock_skeb_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.SkebFetcher"))
 
             # 正常系

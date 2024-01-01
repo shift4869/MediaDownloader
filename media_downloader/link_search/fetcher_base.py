@@ -1,9 +1,8 @@
-# coding: utf-8
 import re
 from abc import ABCMeta, abstractmethod
 from dataclasses import dataclass
 
-from media_downloader.link_search.URL import URL
+from media_downloader.link_search.url import URL
 
 
 @dataclass(frozen=True)
@@ -12,6 +11,7 @@ class FetcherBase(metaclass=ABCMeta):
 
     派生クラスはis_target_urlとfetchをオーバーライドして実装する必要がある
     """
+
     def __init__(self):
         pass
 
@@ -42,8 +42,8 @@ class FetcherBase(metaclass=ABCMeta):
 
 
 class ConcreteFetcher_0(FetcherBase):
-    """具体的な担当者その0
-    """
+    """具体的な担当者その0"""
+
     def __init__(self):
         super().__init__()
 

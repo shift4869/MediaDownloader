@@ -1,14 +1,13 @@
-# coding: utf-8
 import re
 import urllib.parse
 from dataclasses import dataclass
 
 from media_downloader.link_search.Nijie.Workid import Workid
-from media_downloader.link_search.URL import URL
+from media_downloader.link_search.url import URL
 
 
 @dataclass
-class NijieURL():
+class NijieURL:
     """NijieURL
 
     NijieURL を表す文字列を受け取る
@@ -20,6 +19,7 @@ class NijieURL():
     Returns:
         NijieURL: NijieURLを表すValueObject
     """
+
     url: URL
 
     NIJIE_URL_PATTERN = r"^https?://nijie.info/view.php\?id=[0-9]+"
@@ -36,8 +36,7 @@ class NijieURL():
 
     @property
     def work_id(self) -> Workid:
-        """作品IDを返す
-        """
+        """作品IDを返す"""
         original_url = self.url.original_url
         qs = urllib.parse.urlparse(original_url).query
         qd = urllib.parse.parse_qs(qs)
@@ -46,14 +45,12 @@ class NijieURL():
 
     @property
     def non_query_url(self) -> str:
-        """クエリなしURLを返す
-        """
+        """クエリなしURLを返す"""
         return self.url.non_query_url
 
     @property
     def original_url(self) -> str:
-        """元のURLを返す
-        """
+        """元のURLを返す"""
         return self.url.original_url
 
     @classmethod

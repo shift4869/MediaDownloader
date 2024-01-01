@@ -1,9 +1,8 @@
-# coding: utf-8
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Worktitle():
+class Worktitle:
     _title: str
 
     def __post_init__(self) -> None:

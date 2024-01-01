@@ -1,13 +1,12 @@
-# coding: utf-8
 """IllustExtension のテスト
 
 イラスト拡張子を表すクラスをテストする
 """
+
 import sys
 import unittest
 
-from media_downloader.link_search.nico_seiga.IllustExtension import Extension
-from media_downloader.link_search.nico_seiga.IllustExtension import IllustExtension
+from media_downloader.link_search.nico_seiga.illust_extension import Extension, IllustExtension
 
 
 class TestIllustExtension(unittest.TestCase):

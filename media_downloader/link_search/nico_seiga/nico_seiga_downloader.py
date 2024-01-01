@@ -1,16 +1,14 @@
-# coding: utf-8
 import enum
 import re
 from dataclasses import dataclass
 from logging import INFO, getLogger
 from pathlib import Path
 
-from media_downloader.link_search.nico_seiga.IllustExtension import IllustExtension
-from media_downloader.link_search.nico_seiga.NicoSeigaInfo import NicoSeigaInfo
-from media_downloader.link_search.nico_seiga.NicoSeigaSaveDirectoryPath import NicoSeigaSaveDirectoryPath
-from media_downloader.link_search.nico_seiga.NicoSeigaSession import NicoSeigaSession
-from media_downloader.link_search.nico_seiga.NicoSeigaURL import NicoSeigaURL
-
+from media_downloader.link_search.nico_seiga.illust_extension import IllustExtension
+from media_downloader.link_search.nico_seiga.nico_seiga_info import NicoSeigaInfo
+from media_downloader.link_search.nico_seiga.nico_seiga_save_directory_path import NicoSeigaSaveDirectoryPath
+from media_downloader.link_search.nico_seiga.nico_seiga_session import NicoSeigaSession
+from media_downloader.link_search.nico_seiga.nico_seiga_url import NicoSeigaURL
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -23,12 +21,12 @@ class DownloadResult(enum.Enum):
 
 
 @dataclass(frozen=True)
-class NicoSeigaDownloader():
-    """ニコニコ静画作品をDLするクラス
-    """
+class NicoSeigaDownloader:
+    """ニコニコ静画作品をDLするクラス"""
+
     nicoseiga_url: NicoSeigaURL  # ニコニコ静画作品ページURL
-    base_path: Path              # 保存ディレクトリベースパス
-    session: NicoSeigaSession    # 認証済セッション
+    base_path: Path  # 保存ディレクトリベースパス
+    session: NicoSeigaSession  # 認証済セッション
 
     def __post_init__(self):
         self._is_valid()
@@ -43,8 +41,7 @@ class NicoSeigaDownloader():
         return True
 
     def download(self) -> DownloadResult:
-        """ニコニコ静画作品ページURLからダウンロードする
-        """
+        """ニコニコ静画作品ページURLからダウンロードする"""
         # イラスト情報取得
         illust_id = self.nicoseiga_url.illust_id
         author_id = self.session.get_author_id(illust_id)
@@ -97,9 +94,10 @@ class NicoSeigaDownloader():
 if __name__ == "__main__":
     import configparser
     import logging.config
-    from media_downloader.link_search.nico_seiga.NicoSeigaFetcher import NicoSeigaFetcher
-    from media_downloader.link_search.Password import Password
-    from media_downloader.link_search.Username import Username
+
+    from media_downloader.link_search.nico_seiga.nico_seiga_fetcher import NicoSeigaFetcher
+    from media_downloader.link_search.password import Password
+    from media_downloader.link_search.username import Username
 
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
     CONFIG_FILE_NAME = "./config/config.ini"
@@ -108,7 +106,9 @@ if __name__ == "__main__":
 
     base_path = Path("./MediaDownloader/LinkSearch/")
     if config["nico_seiga"].getboolean("is_seiga_trace"):
-        fetcher = NicoSeigaFetcher(Username(config["nico_seiga"]["email"]), Password(config["nico_seiga"]["password"]), base_path)
+        fetcher = NicoSeigaFetcher(
+            Username(config["nico_seiga"]["email"]), Password(config["nico_seiga"]["password"]), base_path
+        )
         illust_id = 5360137
         illust_url = f"https://seiga.nicovideo.jp/seiga/im{illust_id}?query=1"
         fetcher.fetch(illust_url)

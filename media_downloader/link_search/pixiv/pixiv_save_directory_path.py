@@ -1,4 +1,3 @@
-# coding: utf-8
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -12,9 +11,9 @@ from media_downloader.link_search.Pixiv.Worktitle import Worktitle
 
 
 @dataclass(frozen=True)
-class PixivSaveDirectoryPath():
-    """pixiv作品の保存先ディレクトリパス
-    """
+class PixivSaveDirectoryPath:
+    """pixiv作品の保存先ディレクトリパス"""
+
     path: Path  # 保存先ディレクトリパス
 
     def __post_init__(self):
@@ -63,7 +62,7 @@ class PixivSaveDirectoryPath():
         for mtime, path in sorted(filelist_tp, reverse=True):
             filelist.append(path)
 
-        regex = re.compile(r'.*\(([0-9]*)\)$')
+        regex = re.compile(r".*\(([0-9]*)\)$")
         for dir_name in filelist:
             result = regex.match(dir_name)
             if result:
@@ -71,7 +70,7 @@ class PixivSaveDirectoryPath():
                 if ai == str(author_id):
                     sd_path = f"./{dir_name}/{work_title}({work_id})/"
                     break
-        
+
         if sd_path == "":
             sd_path = f"./{author_name}({author_id})/{work_title}({work_id})/"
 
@@ -83,9 +82,9 @@ if __name__ == "__main__":
     import configparser
     import logging.config
     from pathlib import Path
-    from media_downloader.link_search.Password import Password
-    from media_downloader.link_search.Pixiv.PixivFetcher import PixivFetcher
-    from media_downloader.link_search.Username import Username
+    from media_downloader.link_search.password import Password
+    from media_downloader.link_search.pixiv.pixiv_fetcher import PixivFetcher
+    from media_downloader.link_search.username import Username
 
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
     CONFIG_FILE_NAME = "./config/config.ini"

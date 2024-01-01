@@ -1,12 +1,12 @@
-# coding: utf-8
 """Authorid のテスト
 
 作者IDを表すクラスをテストする
 """
+
 import sys
 import unittest
 
-from media_downloader.link_search.nico_seiga.Authorid import Authorid
+from media_downloader.link_search.nico_seiga.authorid import Authorid
 
 
 class TestAuthorid(unittest.TestCase):

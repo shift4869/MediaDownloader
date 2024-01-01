@@ -1,19 +1,19 @@
-# coding: utf-8
 """FetcherBase のテスト
 
 外部リンク探索の基底クラスをテストする
 """
+
 import re
 import sys
 import unittest
 
-from media_downloader.link_search.FetcherBase import FetcherBase
-from media_downloader.link_search.URL import URL
+from media_downloader.link_search.fetcher_base import FetcherBase
+from media_downloader.link_search.url import URL
 
 
 class ConcreteFetcher(FetcherBase):
-    """具体的な担当者
-    """
+    """具体的な担当者"""
+
     def __init__(self):
         super().__init__()
 

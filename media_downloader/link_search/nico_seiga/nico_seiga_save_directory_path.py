@@ -1,15 +1,14 @@
-# coding: utf-8
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from media_downloader.link_search.nico_seiga.NicoSeigaInfo import NicoSeigaInfo
+from media_downloader.link_search.nico_seiga.nico_seiga_info import NicoSeigaInfo
 
 
 @dataclass(frozen=True)
-class NicoSeigaSaveDirectoryPath():
-    """ニコニコ静画作品の保存先ディレクトリパス
-    """
+class NicoSeigaSaveDirectoryPath:
+    """ニコニコ静画作品の保存先ディレクトリパス"""
+
     path: Path  # 保存先ディレクトリパス
 
     def __post_init__(self):
@@ -45,7 +44,7 @@ class NicoSeigaSaveDirectoryPath():
         for mtime, path in sorted(filelist_tp, reverse=True):
             filelist.append(path)
 
-        regex = re.compile(r'.*\(([0-9]*)\)$')
+        regex = re.compile(r".*\(([0-9]*)\)$")
         for dir_name in filelist:
             result = regex.match(dir_name)
             if result:
@@ -62,10 +61,10 @@ class NicoSeigaSaveDirectoryPath():
 
 
 if __name__ == "__main__":
-    from media_downloader.link_search.nico_seiga.Authorid import Authorid
-    from media_downloader.link_search.nico_seiga.Authorname import Authorname
-    from media_downloader.link_search.nico_seiga.Illustid import Illustid
-    from media_downloader.link_search.nico_seiga.Illustname import Illustname
+    from media_downloader.link_search.nico_seiga.authorid import Authorid
+    from media_downloader.link_search.nico_seiga.authorname import Authorname
+    from media_downloader.link_search.nico_seiga.illustid import Illustid
+    from media_downloader.link_search.nico_seiga.illustname import Illustname
 
     illust_id = Illustid(1234567)
     illust_name = Illustname("作品名1")

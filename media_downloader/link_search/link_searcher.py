@@ -1,25 +1,24 @@
-# coding: utf-8
 import configparser
 from logging import INFO, getLogger
 from pathlib import Path
 
 from plyer import notification
 
-from media_downloader.link_search.FetcherBase import FetcherBase
-from media_downloader.link_search.nico_seiga.NicoSeigaFetcher import NicoSeigaFetcher
-from media_downloader.link_search.Nijie.NijieFetcher import NijieFetcher
-from media_downloader.link_search.Password import Password
-from media_downloader.link_search.Pixiv.PixivFetcher import PixivFetcher
-from media_downloader.link_search.pixiv_novel.PixivNovelFetcher import PixivNovelFetcher
-from media_downloader.link_search.URL import URL
-from media_downloader.link_search.Username import Username
-from media_downloader.LogMessage import MSG
+from media_downloader.link_search.fetcher_base import FetcherBase
+from media_downloader.link_search.nico_seiga.nico_seiga_fetcher import NicoSeigaFetcher
+from media_downloader.link_search.nijie.nijie_fetcher import NijieFetcher
+from media_downloader.link_search.password import Password
+from media_downloader.link_search.pixiv.pixiv_fetcher import PixivFetcher
+from media_downloader.link_search.pixiv_novel.pixiv_novel_fetcher import PixivNovelFetcher
+from media_downloader.link_search.url import URL
+from media_downloader.link_search.username import Username
+from media_downloader.log_message import MSG
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 
 
-class LinkSearcher():
+class LinkSearcher:
     def __init__(self):
         self.fetcher_list: list[FetcherBase] = []
 
@@ -61,7 +60,7 @@ class LinkSearcher():
                 title="MediaDownloader 実行エラー",
                 message=f"LinkSearcher: {fetcher_kind} register failed.",
                 app_name="MediaDownloader",
-                timeout=10
+                timeout=10,
             )
 
         # pixiv登録
@@ -77,7 +76,9 @@ class LinkSearcher():
         try:
             c = config["pixiv"]
             if c.getboolean("is_pixiv_trace"):
-                fetcher = PixivNovelFetcher(Username(c["username"]), Password(c["password"]), Path(c["save_base_path"]))
+                fetcher = PixivNovelFetcher(
+                    Username(c["username"]), Password(c["password"]), Path(c["save_base_path"])
+                )
                 ls.register(fetcher)
         except Exception:
             notify("pixiv novel")
@@ -100,21 +101,13 @@ class LinkSearcher():
         except Exception:
             notify("niconico seiga")
 
-        # skeb登録
-        # try:
-        #     c = config["skeb"]
-        #     if c.getboolean("is_skeb_trace"):
-        #         fetcher = SkebFetcher(Username(c["twitter_id"]), Password(c["twitter_password"]), Path(c["save_base_path"]))
-        #         ls.register(fetcher)
-        # except Exception:
-        #     notify("skeb")
-
         logger.info(MSG.LINKSEARCHER_CREATE_DONE.value)
         return ls
 
 
 if __name__ == "__main__":
     import logging.config
+
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
 
     # url = "https://www.pixiv.net/artworks/86704541"

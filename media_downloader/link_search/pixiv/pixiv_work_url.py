@@ -1,14 +1,13 @@
-# coding: utf-8
 import re
 from dataclasses import dataclass
 from pathlib import Path
 
 from media_downloader.link_search.Pixiv.Workid import Workid
-from media_downloader.link_search.URL import URL
+from media_downloader.link_search.url import URL
 
 
 @dataclass
-class PixivWorkURL():
+class PixivWorkURL:
     """PixivWorkURL
 
     PixivWorkURL を表す文字列を受け取る
@@ -20,6 +19,7 @@ class PixivWorkURL():
     Returns:
         PixivWorkURL: PixivWorkURLを表すValueObject
     """
+
     url: URL
 
     PIXIV_URL_PATTERN = r"^https://www.pixiv.net/artworks/[0-9]+"
@@ -35,22 +35,19 @@ class PixivWorkURL():
 
     @property
     def work_id(self) -> Workid:
-        """作品IDを返す
-        """
+        """作品IDを返す"""
         tail = Path(self.non_query_url).name
         work_id_num = int(tail)
         return Workid(work_id_num)
 
     @property
     def non_query_url(self) -> str:
-        """クエリなしURLを返す
-        """
+        """クエリなしURLを返す"""
         return self.url.non_query_url
 
     @property
     def original_url(self) -> str:
-        """元のURLを返す
-        """
+        """元のURLを返す"""
         return self.url.original_url
 
     @classmethod

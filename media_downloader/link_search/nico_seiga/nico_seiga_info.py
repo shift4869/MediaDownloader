@@ -1,19 +1,19 @@
-# coding: utf-8
 from dataclasses import dataclass
 
-from media_downloader.link_search.nico_seiga.Authorid import Authorid
-from media_downloader.link_search.nico_seiga.Authorname import Authorname
-from media_downloader.link_search.nico_seiga.Illustid import Illustid
-from media_downloader.link_search.nico_seiga.Illustname import Illustname
+from media_downloader.link_search.nico_seiga.authorid import Authorid
+from media_downloader.link_search.nico_seiga.authorname import Authorname
+from media_downloader.link_search.nico_seiga.illustid import Illustid
+from media_downloader.link_search.nico_seiga.illustname import Illustname
 
 
 @dataclass(frozen=True)
-class NicoSeigaInfo():
+class NicoSeigaInfo:
     """NicoSeigaInfo
 
     Returns:
         NicoSeigaInfo: NicoSeigaInfoを表すValueObject
     """
+
     illust_id: Illustid
     illust_name: Illustname
     author_id: Authorid

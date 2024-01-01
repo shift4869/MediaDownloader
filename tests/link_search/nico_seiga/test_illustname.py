@@ -1,15 +1,15 @@
-# coding: utf-8
 """Illustname のテスト
 
 作者名を表すクラスをテストする
 """
+
 import re
 import sys
 import unittest
 
 import emoji
 
-from media_downloader.link_search.nico_seiga.Illustname import Illustname
+from media_downloader.link_search.nico_seiga.illustname import Illustname
 
 
 class TestIllustname(unittest.TestCase):

@@ -1,14 +1,13 @@
-# coding: utf-8
 from dataclasses import dataclass
 from typing import Iterable
 
-from media_downloader.link_search.URL import URL
+from media_downloader.link_search.url import URL
 
 
 @dataclass(frozen=True)
 class NijieSourceList(Iterable):
-    """nijie作品への直リンクリスト
-    """
+    """nijie作品への直リンクリスト"""
+
     _list: list[URL]
 
     def __post_init__(self) -> None:

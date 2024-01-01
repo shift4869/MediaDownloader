@@ -1,13 +1,12 @@
-# coding: utf-8
-from dataclasses import dataclass
 import re
+from dataclasses import dataclass
 from typing import ClassVar
 
 import emoji
 
 
 @dataclass(frozen=True)
-class Noveltitle():
+class Noveltitle:
     _original_title: str
     _title: ClassVar[str]
 

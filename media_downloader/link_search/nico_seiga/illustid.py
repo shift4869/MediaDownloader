@@ -1,9 +1,8 @@
-# coding: utf-8
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Illustid():
+class Illustid:
     _id: int
 
     def __post_init__(self) -> None:

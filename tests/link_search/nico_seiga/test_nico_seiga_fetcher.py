@@ -1,26 +1,27 @@
-# coding: utf-8
 """NicoSeigaDownloader のテスト
 
 ニコニコ静画作品をDLするクラスをテストする
 """
+
 import shutil
 import sys
 import unittest
 from contextlib import ExitStack
-from mock import MagicMock, PropertyMock, patch, mock_open
 from pathlib import Path
-from media_downloader.link_search.nico_seiga.Authorid import Authorid
-from media_downloader.link_search.nico_seiga.Authorname import Authorname
-from media_downloader.link_search.nico_seiga.Illustname import Illustname
 
-from media_downloader.link_search.FetcherBase import FetcherBase
-from media_downloader.link_search.nico_seiga.NicoSeigaDownloader import NicoSeigaDownloader
-from media_downloader.link_search.nico_seiga.NicoSeigaSession import NicoSeigaSession
-from media_downloader.link_search.nico_seiga.NicoSeigaURL import NicoSeigaURL
-from media_downloader.link_search.Password import Password
-from media_downloader.link_search.URL import URL
-from media_downloader.link_search.Username import Username
-from media_downloader.link_search.nico_seiga.NicoSeigaFetcher import NicoSeigaFetcher
+from mock import MagicMock, PropertyMock, mock_open, patch
+
+from media_downloader.link_search.fetcher_base import FetcherBase
+from media_downloader.link_search.nico_seiga.authorid import Authorid
+from media_downloader.link_search.nico_seiga.authorname import Authorname
+from media_downloader.link_search.nico_seiga.illustname import Illustname
+from media_downloader.link_search.nico_seiga.nico_seiga_downloader import NicoSeigaDownloader
+from media_downloader.link_search.nico_seiga.nico_seiga_fetcher import NicoSeigaFetcher
+from media_downloader.link_search.nico_seiga.nico_seiga_session import NicoSeigaSession
+from media_downloader.link_search.nico_seiga.nico_seiga_url import NicoSeigaURL
+from media_downloader.link_search.password import Password
+from media_downloader.link_search.url import URL
+from media_downloader.link_search.username import Username
 
 
 class TestNicoSeigaFetcher(unittest.TestCase):
@@ -32,7 +33,9 @@ class TestNicoSeigaFetcher(unittest.TestCase):
 
     def test_NicoSeigaFetcher(self):
         with ExitStack() as stack:
-            m_session = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaSession"))
+            m_session = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaSession")
+            )
 
             username = Username("ユーザー1_ID")
             password = Password("ユーザー1_PW")
@@ -55,7 +58,9 @@ class TestNicoSeigaFetcher(unittest.TestCase):
 
     def test_is_target_url(self):
         with ExitStack() as stack:
-            m_session = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaSession"))
+            m_session = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaSession")
+            )
 
             username = Username("ユーザー1_ID")
             password = Password("ユーザー1_PW")
@@ -76,8 +81,12 @@ class TestNicoSeigaFetcher(unittest.TestCase):
 
     def test_fetch(self):
         with ExitStack() as stack:
-            m_session = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaSession"))
-            m_downloader = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaDownloader"))
+            m_session = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaSession")
+            )
+            m_downloader = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaFetcher.NicoSeigaDownloader")
+            )
 
             username = Username("ユーザー1_ID")
             password = Password("ユーザー1_PW")

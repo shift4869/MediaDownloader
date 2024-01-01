@@ -1,18 +1,17 @@
-# coding: utf-8
 from dataclasses import dataclass
 from logging import INFO, getLogger
 from pathlib import Path
 
 from pixivpy3 import AppPixivAPI
 
-from media_downloader.link_search.FetcherBase import FetcherBase
-from media_downloader.link_search.Password import Password
+from media_downloader.link_search.fetcher_base import FetcherBase
+from media_downloader.link_search.password import Password
 from media_downloader.link_search.Pixiv.PixivSaveDirectoryPath import PixivSaveDirectoryPath
 from media_downloader.link_search.Pixiv.PixivSourceList import PixivSourceList
 from media_downloader.link_search.Pixiv.PixivWorkDownloader import PixivWorkDownloader
 from media_downloader.link_search.Pixiv.PixivWorkURL import PixivWorkURL
-from media_downloader.link_search.URL import URL
-from media_downloader.link_search.Username import Username
+from media_downloader.link_search.url import URL
+from media_downloader.link_search.username import Username
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)
@@ -20,10 +19,10 @@ logger.setLevel(INFO)
 
 @dataclass(frozen=True)
 class PixivFetcher(FetcherBase):
-    """pixiv作品を取得するクラス
-    """
+    """pixiv作品を取得するクラス"""
+
     aapi: AppPixivAPI  # 非公式pixivAPI操作インスタンス
-    base_path: Path    # 保存ディレクトリベースパス
+    base_path: Path  # 保存ディレクトリベースパス
 
     # refresh_tokenファイルパス
     REFRESH_TOKEN_PATH = "./config/refresh_token.ini"
@@ -128,6 +127,7 @@ class PixivFetcher(FetcherBase):
 if __name__ == "__main__":
     import configparser
     import logging.config
+
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
     CONFIG_FILE_NAME = "./config/config.ini"
     config = configparser.ConfigParser()

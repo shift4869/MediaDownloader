@@ -1,12 +1,12 @@
-# coding: utf-8
 """Username のテスト
 
 ユーザー名を表すクラスをテストする
 """
+
 import sys
 import unittest
 
-from media_downloader.link_search.Username import Username
+from media_downloader.link_search.username import Username
 
 
 class TestUsername(unittest.TestCase):

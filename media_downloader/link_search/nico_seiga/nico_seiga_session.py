@@ -1,30 +1,34 @@
-# coding: utf-8
+from dataclasses import dataclass
+
 import requests
 from bs4 import BeautifulSoup
-from dataclasses import dataclass
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 
-from media_downloader.link_search.nico_seiga.Authorid import Authorid
-from media_downloader.link_search.nico_seiga.Authorname import Authorname
-from media_downloader.link_search.nico_seiga.Illustid import Illustid
-from media_downloader.link_search.nico_seiga.Illustname import Illustname
-from media_downloader.link_search.Password import Password
-from media_downloader.link_search.URL import URL
-from media_downloader.link_search.Username import Username
+from media_downloader.link_search.nico_seiga.authorid import Authorid
+from media_downloader.link_search.nico_seiga.authorname import Authorname
+from media_downloader.link_search.nico_seiga.illustid import Illustid
+from media_downloader.link_search.nico_seiga.illustname import Illustname
+from media_downloader.link_search.password import Password
+from media_downloader.link_search.url import URL
+from media_downloader.link_search.username import Username
 
 
 @dataclass(frozen=True)
-class NicoSeigaSession():
+class NicoSeigaSession:
     """認証済セッションクラス
 
     生成時にusernameとpasswordを受け取り、login()にてセッションを開始し、認証・ログインする
     画像情報等ニコニコ静画とのやりとりには以後この認証済セッションを使う
     """
+
     _session: requests.Session  # 認証済セッション
 
     # 接続時に使用するヘッダー
-    HEADERS = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"}
+    agent_browser = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    agent_webkit = "AppleWebKit/537.36 (KHTML, like Gecko)"
+    agent_chrome = "Chrome/88.0.4324.190 Safari/537.36"
+    HEADERS = {"User-Agent": " ".join([agent_browser, agent_webkit, agent_chrome])}
     # ログインエンドポイント
     LOGIN_ENDPOINT = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
     # 画像情報取得エンドポイントベース

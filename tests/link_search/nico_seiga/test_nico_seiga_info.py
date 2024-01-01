@@ -1,16 +1,16 @@
-# coding: utf-8
 """NicoSeigaInfo のテスト
 
 ニコニコ静画の情報をまとめるクラスをテストする
 """
+
 import sys
 import unittest
 
-from media_downloader.link_search.nico_seiga.Authorid import Authorid
-from media_downloader.link_search.nico_seiga.Authorname import Authorname
-from media_downloader.link_search.nico_seiga.Illustid import Illustid
-from media_downloader.link_search.nico_seiga.Illustname import Illustname
-from media_downloader.link_search.nico_seiga.NicoSeigaInfo import NicoSeigaInfo
+from media_downloader.link_search.nico_seiga.authorid import Authorid
+from media_downloader.link_search.nico_seiga.authorname import Authorname
+from media_downloader.link_search.nico_seiga.illustid import Illustid
+from media_downloader.link_search.nico_seiga.illustname import Illustname
+from media_downloader.link_search.nico_seiga.nico_seiga_info import NicoSeigaInfo
 
 
 class TestNicoSeigaInfo(unittest.TestCase):

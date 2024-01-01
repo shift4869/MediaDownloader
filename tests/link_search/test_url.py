@@ -1,13 +1,13 @@
-# coding: utf-8
 """URL のテスト
 
 URLを表すクラスをテストする
 """
-import sys
-import urllib.parse
-import unittest
 
-from media_downloader.link_search.URL import URL
+import sys
+import unittest
+import urllib.parse
+
+from media_downloader.link_search.url import URL
 
 
 class TestURL(unittest.TestCase):
@@ -27,9 +27,7 @@ class TestURL(unittest.TestCase):
 
         # クエリ付き
         url_str = "https://www.pixiv.net/artworks/86704541?some_query=1"
-        non_query_url = urllib.parse.urlunparse(
-            urllib.parse.urlparse(str(url_str))._replace(query=None)
-        )
+        non_query_url = urllib.parse.urlunparse(urllib.parse.urlparse(str(url_str))._replace(query=None))
         url = URL(url_str)
         self.assertEqual(non_query_url, url.non_query_url)
         self.assertEqual(url_str, url.original_url)

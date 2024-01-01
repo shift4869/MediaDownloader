@@ -1,9 +1,8 @@
-# coding: utf-8
 from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Password():
+class Password:
     _password: str  # 投稿者名
 
     def __post_init__(self) -> None:

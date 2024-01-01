@@ -1,17 +1,16 @@
-# coding: utf-8
 from dataclasses import dataclass
 from typing import Iterable
 
 from pixivpy3 import AppPixivAPI
 
 from media_downloader.link_search.Pixiv.PixivWorkURL import PixivWorkURL
-from media_downloader.link_search.URL import URL
+from media_downloader.link_search.url import URL
 
 
 @dataclass(frozen=True)
 class PixivSourceList(Iterable):
-    """pixiv作品の直リンクURLリスト
-    """
+    """pixiv作品の直リンクURLリスト"""
+
     _list: list[URL]  # URLリスト
 
     def __post_init__(self) -> None:

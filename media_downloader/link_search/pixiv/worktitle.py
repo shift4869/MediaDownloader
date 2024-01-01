@@ -1,4 +1,3 @@
-# coding: utf-8
 import re
 from dataclasses import dataclass
 from typing import ClassVar
@@ -7,7 +6,7 @@ import emoji
 
 
 @dataclass(frozen=True)
-class Worktitle():
+class Worktitle:
     _original_title: str
     _title: ClassVar[str]
 

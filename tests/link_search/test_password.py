@@ -1,12 +1,12 @@
-# coding: utf-8
 """Password のテスト
 
 パスワードを表すクラスをテストする
 """
+
 import sys
 import unittest
 
-from media_downloader.link_search.Password import Password
+from media_downloader.link_search.password import Password
 
 
 class TestPassword(unittest.TestCase):

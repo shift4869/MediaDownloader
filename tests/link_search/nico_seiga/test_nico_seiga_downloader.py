@@ -1,24 +1,24 @@
-# coding: utf-8
 """NicoSeigaDownloader のテスト
 
 ニコニコ静画作品をDLするクラスをテストする
 """
+
 import shutil
 import sys
 import unittest
 from contextlib import ExitStack
-from mock import MagicMock, patch, mock_open
 from pathlib import Path
 
-from media_downloader.link_search.nico_seiga.Authorid import Authorid
-from media_downloader.link_search.nico_seiga.Authorname import Authorname
-from media_downloader.link_search.nico_seiga.Illustname import Illustname
-from media_downloader.link_search.nico_seiga.NicoSeigaDownloader import DownloadResult
-from media_downloader.link_search.nico_seiga.NicoSeigaDownloader import NicoSeigaDownloader
-from media_downloader.link_search.nico_seiga.NicoSeigaInfo import NicoSeigaInfo
-from media_downloader.link_search.nico_seiga.NicoSeigaSaveDirectoryPath import NicoSeigaSaveDirectoryPath
-from media_downloader.link_search.nico_seiga.NicoSeigaSession import NicoSeigaSession
-from media_downloader.link_search.nico_seiga.NicoSeigaURL import NicoSeigaURL
+from mock import MagicMock, mock_open, patch
+
+from media_downloader.link_search.nico_seiga.authorid import Authorid
+from media_downloader.link_search.nico_seiga.authorname import Authorname
+from media_downloader.link_search.nico_seiga.illustname import Illustname
+from media_downloader.link_search.nico_seiga.nico_seiga_downloader import DownloadResult, NicoSeigaDownloader
+from media_downloader.link_search.nico_seiga.nico_seiga_info import NicoSeigaInfo
+from media_downloader.link_search.nico_seiga.nico_seiga_save_directory_path import NicoSeigaSaveDirectoryPath
+from media_downloader.link_search.nico_seiga.nico_seiga_session import NicoSeigaSession
+from media_downloader.link_search.nico_seiga.nico_seiga_url import NicoSeigaURL
 
 
 class TestNicoSeigaDownloader(unittest.TestCase):
@@ -38,8 +38,12 @@ class TestNicoSeigaDownloader(unittest.TestCase):
         base_path = Path("./test")
         session = None
         with ExitStack() as stack:
-            m_sessionlogin = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession.login"))
-            m_is_valid = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession._is_valid"))
+            m_sessionlogin = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession.login")
+            )
+            m_is_valid = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession._is_valid")
+            )
             session = NicoSeigaSession("username", "password")
 
         downloader = NicoSeigaDownloader(nicoseiga_url, base_path, session)
@@ -53,8 +57,12 @@ class TestNicoSeigaDownloader(unittest.TestCase):
         base_path = Path("./test")
         session = None
         with ExitStack() as stack:
-            m_sessionlogin = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession.login"))
-            m_is_valid = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession._is_valid"))
+            m_sessionlogin = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession.login")
+            )
+            m_is_valid = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession._is_valid")
+            )
             session = NicoSeigaSession("username", "password")
 
         downloader = NicoSeigaDownloader(nicoseiga_url, base_path, session)
@@ -92,10 +100,14 @@ class TestNicoSeigaDownloader(unittest.TestCase):
         session.get_source_url.side_effect = lambda id: None
         session.get_illust_binary.side_effect = lambda url: b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a"
         with ExitStack() as stack:
-            m_is_valid = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.NicoSeigaDownloader._is_valid"))
+            m_is_valid = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.NicoSeigaDownloader._is_valid")
+            )
             # m_mkdir = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.Path.mkdir"))
             # m_open = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.Path.open", mock_open()))
-            m_logger_info = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.logger.info"))
+            m_logger_info = stack.enter_context(
+                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.logger.info")
+            )
 
             # 初回DL想定
             downloader = NicoSeigaDownloader(nicoseiga_url, base_path, session)

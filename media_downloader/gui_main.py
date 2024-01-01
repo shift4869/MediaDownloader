@@ -1,4 +1,3 @@
-# coding: utf-8
 import configparser
 import logging
 import logging.config
@@ -8,7 +7,7 @@ from pathlib import Path
 
 import PySimpleGUI as sg
 
-from media_downloader.link_search import LinkSearcher
+from media_downloader.link_search.link_searcher import LinkSearcher
 
 # 対象サイト
 target = ["pixiv pic/manga", "pixiv novel", "nijie", "seiga", "skeb"]
@@ -41,21 +40,33 @@ def gui_main():
     # ウィンドウのレイアウト
     layout = [
         [sg.Text("MediaDownloader")],
-        # [sg.Text("対象サイト", size=(18, 1)), sg.Combo(target, key="-TARGET-", enable_events=True, default_value=target[0])],
-        # [sg.Text("作品ページURL形式", size=(18, 1)), sg.Text(target_url_example[target[0]], key="-WORK_URL_SAMPLE-", size=(40, 1))],
         [sg.Text("作品ページURL", size=(18, 1)), sg.InputText(key="-WORK_URL-", default_text="")],
         [
             sg.Text("チェック対象", size=(18, 1)),
             sg.Checkbox("pixiv", default=config["pixiv"].getboolean("is_pixiv_trace"), key="-CB_pixiv-"),
             sg.Checkbox("nijie", default=config["nijie"].getboolean("is_nijie_trace"), key="-CB_nijie-"),
-            sg.Checkbox("nico_seiga", default=config["nico_seiga"].getboolean("is_seiga_trace"), key="-CB_nico_seiga-"),
+            sg.Checkbox(
+                "nico_seiga", default=config["nico_seiga"].getboolean("is_seiga_trace"), key="-CB_nico_seiga-"
+            ),
             # sg.Checkbox("skeb", default=config["skeb"].getboolean("is_skeb_trace"), key="-CB_skeb-"),
         ],
-        [sg.Text("保存先パス", size=(18, 1)), sg.InputText(key="-SAVE_PATH-", default_text=save_base_path),
-         sg.FolderBrowse("参照", initial_folder=save_base_path, pad=((3, 0), (0, 0))),
-         sg.Button("開く", key="-FOLDER_OPEN-", pad=((7, 2), (0, 0)))],
+        [
+            sg.Text("保存先パス", size=(18, 1)),
+            sg.InputText(key="-SAVE_PATH-", default_text=save_base_path),
+            sg.FolderBrowse("参照", initial_folder=save_base_path, pad=((3, 0), (0, 0))),
+            sg.Button("開く", key="-FOLDER_OPEN-", pad=((7, 2), (0, 0))),
+        ],
         [sg.Text("", size=(53, 2)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0)))],
-        [sg.Multiline(key="-OUTPUT-", size=(100, 10), auto_refresh=True, autoscroll=True, reroute_stdout=True, reroute_stderr=True)],
+        [
+            sg.Multiline(
+                key="-OUTPUT-",
+                size=(100, 10),
+                auto_refresh=True,
+                autoscroll=True,
+                reroute_stdout=True,
+                reroute_stderr=True,
+            )
+        ],
     ]
 
     # アイコン画像取得
