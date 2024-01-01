@@ -11,9 +11,9 @@ from logging import WARNING, getLogger
 
 from mock import MagicMock, patch
 
-from media_downloader.link_search.LinkSearcher import LinkSearcher
+from media_downloader.link_search.link_searcher import LinkSearcher
 
-logger = getLogger("MediaDownloader.LinkSearch.LinkSearcher")
+logger = getLogger("media_downloader.link_search.link_searcher")
 logger.setLevel(WARNING)
 
 
@@ -88,16 +88,16 @@ class TestLinkSearcher(unittest.TestCase):
 
     def test_create(self):
         with ExitStack() as stack:
-            mock_notification = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.notification"))
-            mock_pixiv_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.PixivFetcher"))
+            mock_notification = stack.enter_context(patch("media_downloader.link_search.link_searcher.notification"))
+            mock_pixiv_fetcher = stack.enter_context(patch("media_downloader.link_search.link_searcher.PixivFetcher"))
             mock_pixiv_novel_fetcher = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.LinkSearcher.PixivNovelFetcher")
+                patch("media_downloader.link_search.link_searcher.PixivNovelFetcher")
             )
-            mock_nijie_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.NijieFetcher"))
+            mock_nijie_fetcher = stack.enter_context(patch("media_downloader.link_search.link_searcher.NijieFetcher"))
             mock_nico_seiga_fetcher = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.LinkSearcher.NicoSeigaFetcher")
+                patch("media_downloader.link_search.link_searcher.NicoSeigaFetcher")
             )
-            # mock_skeb_fetcher = stack.enter_context(patch("MediaDownloader.LinkSearch.LinkSearcher.SkebFetcher"))
+            # mock_skeb_fetcher = stack.enter_context(patch("media_downloader.link_search.link_searcher.SkebFetcher"))
 
             # 正常系
             CONFIG_FILE_NAME = "./config/config.ini"

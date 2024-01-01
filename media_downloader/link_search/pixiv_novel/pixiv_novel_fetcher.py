@@ -6,9 +6,9 @@ from pixivpy3 import AppPixivAPI
 
 from media_downloader.link_search.fetcher_base import FetcherBase
 from media_downloader.link_search.password import Password
-from media_downloader.link_search.pixiv_novel.PixivNovelDownloader import PixivNovelDownloader
-from media_downloader.link_search.pixiv_novel.PixivNovelSaveDirectoryPath import PixivNovelSaveDirectoryPath
-from media_downloader.link_search.pixiv_novel.PixivNovelURL import PixivNovelURL
+from media_downloader.link_search.pixiv_novel.pixiv_novel_downloader import PixivNovelDownloader
+from media_downloader.link_search.pixiv_novel.pixiv_novel_save_directory_path import PixivNovelSaveDirectoryPath
+from media_downloader.link_search.pixiv_novel.pixiv_novel_url import PixivNovelURL
 from media_downloader.link_search.url import URL
 from media_downloader.link_search.username import Username
 
@@ -87,13 +87,6 @@ class PixivNovelFetcher(FetcherBase):
         logger.error(" or ")
         logger.error("https://gist.github.com/upbit/6edda27cb1644e94183291109b8a5fde")
         logger.error("process abort")
-        raise ValueError("pixiv auth failed.")
-
-        # refresh_tokenを保存
-        refresh_token = api.refresh_token
-        with rt_path.open(mode="w") as fout:
-            fout.write(refresh_token)
-
         raise ValueError("pixiv auth failed.")
 
     def is_target_url(self, url: URL) -> bool:

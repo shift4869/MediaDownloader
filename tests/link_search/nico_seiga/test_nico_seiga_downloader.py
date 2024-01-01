@@ -39,10 +39,10 @@ class TestNicoSeigaDownloader(unittest.TestCase):
         session = None
         with ExitStack() as stack:
             m_sessionlogin = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession.login")
+                patch("media_downloader.link_search.nico_seiga.nico_seiga_session.NicoSeigaSession.login")
             )
             m_is_valid = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession._is_valid")
+                patch("media_downloader.link_search.nico_seiga.nico_seiga_session.NicoSeigaSession._is_valid")
             )
             session = NicoSeigaSession("username", "password")
 
@@ -58,10 +58,10 @@ class TestNicoSeigaDownloader(unittest.TestCase):
         session = None
         with ExitStack() as stack:
             m_sessionlogin = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession.login")
+                patch("media_downloader.link_search.nico_seiga.nico_seiga_session.NicoSeigaSession.login")
             )
             m_is_valid = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaSession.NicoSeigaSession._is_valid")
+                patch("media_downloader.link_search.nico_seiga.nico_seiga_session.NicoSeigaSession._is_valid")
             )
             session = NicoSeigaSession("username", "password")
 
@@ -101,12 +101,10 @@ class TestNicoSeigaDownloader(unittest.TestCase):
         session.get_illust_binary.side_effect = lambda url: b"\x89\x50\x4e\x47\x0d\x0a\x1a\x0a"
         with ExitStack() as stack:
             m_is_valid = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.NicoSeigaDownloader._is_valid")
+                patch("media_downloader.link_search.nico_seiga.nico_seiga_downloader.NicoSeigaDownloader._is_valid")
             )
-            # m_mkdir = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.Path.mkdir"))
-            # m_open = stack.enter_context(patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.Path.open", mock_open()))
             m_logger_info = stack.enter_context(
-                patch("MediaDownloader.LinkSearch.NicoSeiga.NicoSeigaDownloader.logger.info")
+                patch("media_downloader.link_search.nico_seiga.nico_seiga_downloader.logger.info")
             )
 
             # 初回DL想定

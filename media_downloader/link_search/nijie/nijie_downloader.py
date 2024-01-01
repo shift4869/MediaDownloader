@@ -7,10 +7,10 @@ from time import sleep
 from bs4 import BeautifulSoup
 import requests
 
-from media_downloader.link_search.Nijie.NijieCookie import NijieCookie
-from media_downloader.link_search.Nijie.NijiePageInfo import NijiePageInfo
-from media_downloader.link_search.Nijie.NijieSaveDirectoryPath import NijieSaveDirectoryPath
-from media_downloader.link_search.Nijie.NijieURL import NijieURL
+from media_downloader.link_search.nijie.nijie_cookie import NijieCookie
+from media_downloader.link_search.nijie.nijie_page_info import NijiePageInfo
+from media_downloader.link_search.nijie.nijie_save_directory_path import NijieSaveDirectoryPath
+from media_downloader.link_search.nijie.nijie_url import NijieURL
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)

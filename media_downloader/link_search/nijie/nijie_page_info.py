@@ -3,10 +3,10 @@ from dataclasses import dataclass
 
 from bs4 import BeautifulSoup
 
-from media_downloader.link_search.Nijie.Authorid import Authorid
-from media_downloader.link_search.Nijie.Authorname import Authorname
-from media_downloader.link_search.Nijie.NijieSourceList import NijieSourceList
-from media_downloader.link_search.Nijie.Worktitle import Worktitle
+from media_downloader.link_search.nijie.authorid import Authorid
+from media_downloader.link_search.nijie.authorname import Authorname
+from media_downloader.link_search.nijie.nijie_source_list import NijieSourceList
+from media_downloader.link_search.nijie.worktitle import Worktitle
 
 
 @dataclass(frozen=True)

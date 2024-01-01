@@ -5,8 +5,8 @@ from logging import INFO, getLogger
 from bs4 import BeautifulSoup
 from pixivpy3 import AppPixivAPI
 
-from media_downloader.link_search.pixiv_novel.PixivNovelSaveDirectoryPath import PixivNovelSaveDirectoryPath
-from media_downloader.link_search.pixiv_novel.PixivNovelURL import PixivNovelURL
+from media_downloader.link_search.pixiv_novel.pixiv_novel_save_directory_path import PixivNovelSaveDirectoryPath
+from media_downloader.link_search.pixiv_novel.pixiv_novel_url import PixivNovelURL
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)

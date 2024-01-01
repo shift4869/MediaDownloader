@@ -3,7 +3,7 @@ from typing import Iterable
 
 from pixivpy3 import AppPixivAPI
 
-from media_downloader.link_search.Pixiv.PixivWorkURL import PixivWorkURL
+from media_downloader.link_search.pixiv.pixiv_work_url import PixivWorkURL
 from media_downloader.link_search.url import URL
 
 

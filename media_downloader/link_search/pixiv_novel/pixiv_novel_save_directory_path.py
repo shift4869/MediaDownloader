@@ -4,10 +4,10 @@ from pathlib import Path
 
 from pixivpy3 import AppPixivAPI
 
-from media_downloader.link_search.pixiv_novel.Authorid import Authorid
-from media_downloader.link_search.pixiv_novel.Authorname import Authorname
-from media_downloader.link_search.pixiv_novel.Noveltitle import Noveltitle
-from media_downloader.link_search.pixiv_novel.PixivNovelURL import PixivNovelURL
+from media_downloader.link_search.pixiv_novel.authorid import Authorid
+from media_downloader.link_search.pixiv_novel.authorname import Authorname
+from media_downloader.link_search.pixiv_novel.noveltitle import Noveltitle
+from media_downloader.link_search.pixiv_novel.pixiv_novel_url import PixivNovelURL
 
 
 @dataclass(frozen=True)

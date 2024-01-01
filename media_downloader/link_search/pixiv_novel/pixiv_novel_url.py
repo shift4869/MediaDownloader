@@ -2,7 +2,7 @@ import re
 import urllib.parse
 from dataclasses import dataclass
 
-from media_downloader.link_search.pixiv_novel.Novelid import Novelid
+from media_downloader.link_search.pixiv_novel.novelid import Novelid
 from media_downloader.link_search.url import URL
 
 

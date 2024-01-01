@@ -2,7 +2,7 @@ import re
 import urllib.parse
 from dataclasses import dataclass
 
-from media_downloader.link_search.Nijie.Workid import Workid
+from media_downloader.link_search.nijie.workid import Workid
 from media_downloader.link_search.url import URL
 
 

@@ -2,8 +2,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from media_downloader.link_search.Nijie.NijiePageInfo import NijiePageInfo
-from media_downloader.link_search.Nijie.NijieURL import NijieURL
+from media_downloader.link_search.nijie.nijie_page_info import NijiePageInfo
+from media_downloader.link_search.nijie.nijie_url import NijieURL
 
 
 @dataclass(frozen=True)

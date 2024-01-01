@@ -8,9 +8,9 @@ import requests
 import requests.cookies
 
 from media_downloader.link_search.fetcher_base import FetcherBase
-from media_downloader.link_search.Nijie.NijieCookie import NijieCookie
-from media_downloader.link_search.Nijie.NijieDownloader import NijieDownloader
-from media_downloader.link_search.Nijie.NijieURL import NijieURL
+from media_downloader.link_search.nijie.nijie_cookie import NijieCookie
+from media_downloader.link_search.nijie.nijie_downloader import NijieDownloader
+from media_downloader.link_search.nijie.nijie_url import NijieURL
 from media_downloader.link_search.password import Password
 from media_downloader.link_search.url import URL
 from media_downloader.link_search.username import Username
@@ -27,9 +27,10 @@ class NijieFetcher(FetcherBase):
     base_path: Path  # 保存ディレクトリベースパス
 
     # 接続時に使用するヘッダー
-    HEADERS = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"
-    }
+    agent_browser = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    agent_webkit = "AppleWebKit/537.36 (KHTML, like Gecko)"
+    agent_chrome = "Chrome/88.0.4324.190 Safari/537.36"
+    HEADERS = {"User-Agent": " ".join([agent_browser, agent_webkit, agent_chrome])}
     # ログイン情報を保持するクッキーファイル置き場
     NIJIE_COOKIE_PATH = "./config/nijie_cookie.ini"
 

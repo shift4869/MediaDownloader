@@ -7,10 +7,10 @@ from time import sleep
 
 from pixivpy3 import AppPixivAPI
 
-from media_downloader.link_search.Pixiv.PixivSaveDirectoryPath import PixivSaveDirectoryPath
-from media_downloader.link_search.Pixiv.PixivSourceList import PixivSourceList
-from media_downloader.link_search.Pixiv.PixivUgoiraDownloader import PixivUgoiraDownloader
-from media_downloader.link_search.Pixiv.Workid import Workid
+from media_downloader.link_search.pixiv.pixiv_save_directory_path import PixivSaveDirectoryPath
+from media_downloader.link_search.pixiv.pixiv_source_list import PixivSourceList
+from media_downloader.link_search.pixiv.pixiv_ugoira_downloader import PixivUgoiraDownloader
+from media_downloader.link_search.pixiv.workid import Workid
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)

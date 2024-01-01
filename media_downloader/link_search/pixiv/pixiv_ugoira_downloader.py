@@ -7,8 +7,8 @@ from time import sleep
 from PIL import Image
 from pixivpy3 import AppPixivAPI
 
-from media_downloader.link_search.Pixiv.Workid import Workid
-from media_downloader.link_search.Pixiv.Worktitle import Worktitle
+from media_downloader.link_search.pixiv.workid import Workid
+from media_downloader.link_search.pixiv.worktitle import Worktitle
 
 logger = getLogger(__name__)
 logger.setLevel(INFO)

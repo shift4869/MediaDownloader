@@ -2,7 +2,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from media_downloader.link_search.Pixiv.Workid import Workid
+from media_downloader.link_search.pixiv.workid import Workid
 from media_downloader.link_search.url import URL
 
 
