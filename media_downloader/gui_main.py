@@ -8,20 +8,17 @@ from pathlib import Path
 import PySimpleGUI as sg
 
 from media_downloader.link_search.link_searcher import LinkSearcher
-
-# 対象サイト
-target = ["pixiv pic/manga", "pixiv novel", "nijie", "seiga", "skeb"]
+from media_downloader.util import Result
 
 
-def gui_main():
+def gui_main() -> Result:
     # 対象URL例サンプル
-    target_url_example = {
-        "pixiv pic/manga": "https://www.pixiv.net/artworks/xxxxxxxx",
-        "pixiv novel": "https://www.pixiv.net/novel/show.php?id=xxxxxxxx",
-        "nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
-        "seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
-        # "skeb": "https://skeb.jp/@xxxxxxxx/works/xx",
-    }
+    # target_url_example = {
+    #     "pixiv pic/manga": "https://www.pixiv.net/artworks/xxxxxxxx",
+    #     "pixiv novel": "https://www.pixiv.net/novel/show.php?id=xxxxxxxx",
+    #     "nijie": "http://nijie.info/view_popup.php?id=xxxxxx",
+    #     "seiga": "https://seiga.nicovideo.jp/seiga/imxxxxxxx",
+    # }
 
     # configファイルロード
     CONFIG_FILE_NAME = "./config/config.ini"
@@ -34,8 +31,7 @@ def gui_main():
         save_base_path = Path(config["save_base_path"]["save_base_path"])
     except Exception:
         save_base_path = Path(__file__).parent
-    if not save_base_path.exists():
-        save_base_path.mkdir(parents=True, exist_ok=True)
+    save_base_path.mkdir(parents=True, exist_ok=True)
 
     # ウィンドウのレイアウト
     layout = [
@@ -48,7 +44,6 @@ def gui_main():
             sg.Checkbox(
                 "nico_seiga", default=config["nico_seiga"].getboolean("is_seiga_trace"), key="-CB_nico_seiga-"
             ),
-            # sg.Checkbox("skeb", default=config["skeb"].getboolean("is_skeb_trace"), key="-CB_skeb-"),
         ],
         [
             sg.Text("保存先パス", size=(18, 1)),
@@ -80,7 +75,7 @@ def gui_main():
     logging.config.fileConfig("./log/logging.ini", disable_existing_loggers=False)
     for name in logging.root.manager.loggerDict:
         # 自分以外のすべてのライブラリのログ出力を抑制
-        if "MediaDownloader" not in name:
+        if "media_downloader" not in name:
             getLogger(name).disabled = True
     logger = getLogger(__name__)
     logger.setLevel(INFO)
@@ -91,21 +86,17 @@ def gui_main():
         event, values = window.read()
         if event in [sg.WIN_CLOSED, "-EXIT-"]:
             break
-        if event == "-TARGET-":
-            work_kind = values["-TARGET-"]
-            window["-WORK_URL_SAMPLE-"].update(target_url_example[work_kind])
         if event == "-RUN-":
-            work_url = values["-WORK_URL-"]
             try:
+                work_url = values["-WORK_URL-"]
                 print("初期化中...")
                 config["pixiv"]["is_pixiv_trace"] = "True" if values["-CB_pixiv-"] else "False"
                 config["nijie"]["is_nijie_trace"] = "True" if values["-CB_nijie-"] else "False"
                 config["nico_seiga"]["is_seiga_trace"] = "True" if values["-CB_nico_seiga-"] else "False"
-                # config["skeb"]["is_skeb_trace"] = "True" if values["-CB_skeb-"] else "False"
-                ls = LinkSearcher.LinkSearcher.create(config)
+                link_searcher = LinkSearcher.create(config)
                 print("初期化完了！")
 
-                ls.fetch(work_url)
+                link_searcher.fetch(work_url)
             except Exception:
                 logger.info("Process failed...")
             else:
@@ -116,7 +107,7 @@ def gui_main():
 
     # ウィンドウ終了処理
     window.close()
-    return 0
+    return Result.SUCCESS
 
 
 if __name__ == "__main__":
