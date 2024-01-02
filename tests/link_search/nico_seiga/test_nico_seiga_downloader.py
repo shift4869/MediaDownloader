@@ -23,7 +23,7 @@ from media_downloader.link_search.nico_seiga.nico_seiga_url import NicoSeigaURL
 
 class TestNicoSeigaDownloader(unittest.TestCase):
     def setUp(self):
-        self.TBP = Path("./test")
+        self.TBP = Path("./tests")
 
     def tearDown(self):
         pass
@@ -35,7 +35,7 @@ class TestNicoSeigaDownloader(unittest.TestCase):
 
     def test_NicoSeigaDownloader(self):
         nicoseiga_url = NicoSeigaURL.create("https://seiga.nicovideo.jp/seiga/im11111111")
-        base_path = Path("./test")
+        base_path = Path("./tests")
         session = None
         with ExitStack() as stack:
             m_sessionlogin = stack.enter_context(
@@ -54,7 +54,7 @@ class TestNicoSeigaDownloader(unittest.TestCase):
 
     def test_is_valid(self):
         nicoseiga_url = NicoSeigaURL.create("https://seiga.nicovideo.jp/seiga/im11111111")
-        base_path = Path("./test")
+        base_path = Path("./tests")
         session = None
         with ExitStack() as stack:
             m_sessionlogin = stack.enter_context(
@@ -85,7 +85,7 @@ class TestNicoSeigaDownloader(unittest.TestCase):
 
     def test_download(self):
         nicoseiga_url = NicoSeigaURL.create("https://seiga.nicovideo.jp/seiga/im11111111")
-        base_path = Path("./test")
+        base_path = Path("./tests")
         author_id = Authorid(12345678)
         illust_id = nicoseiga_url.illust_id
         illust_name = Illustname("作品名1")

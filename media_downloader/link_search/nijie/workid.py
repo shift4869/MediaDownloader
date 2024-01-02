@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Workid:
+class Workid():
     _id: int
 
     def __post_init__(self) -> None:
@@ -21,16 +21,16 @@ class Workid:
 
 
 if __name__ == "__main__":
-    ids = [
+    id_nums = [
         12345678,
         0,
         -1,
         "",
     ]
 
-    for id in ids:
+    for id_num in id_nums:
         try:
-            work_id = Workid(id)
+            work_id = Workid(id_num)
             print(work_id)
         except (ValueError, TypeError) as e:
             print(e.args[0])

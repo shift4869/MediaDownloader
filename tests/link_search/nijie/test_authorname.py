@@ -53,7 +53,7 @@ class TestAuthorname(unittest.TestCase):
         with self.assertRaises(ValueError):
             author_name = Authorname("")
 
-    def test_name(self):
+    def test_id(self):
         name = "作成者1"
         author_name = Authorname(name)
         self.assertEqual(name, author_name.name)

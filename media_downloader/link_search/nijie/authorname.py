@@ -6,11 +6,15 @@ import emoji
 
 
 @dataclass(frozen=True)
-class Authorname:
+class Authorname():
     _original_name: str
     _name: ClassVar[str]
 
     def __post_init__(self) -> None:
+        """初期化後処理
+
+        サニタイズを行う
+        """
         if not isinstance(self._original_name, str):
             raise TypeError("name is not string, invalid Authorname.")
         if self._original_name == "":

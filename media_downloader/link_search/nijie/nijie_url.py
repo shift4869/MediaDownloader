@@ -11,13 +11,13 @@ class NijieURL:
     """NijieURL
 
     NijieURL を表す文字列を受け取る
-    引数がNIJIE_URL_PATTERN と一致する場合にNijieURL として受け入れる
+    引数が NIJIE_URL_PATTERN と一致する場合に NijieURL として受け入れる
 
     Raises:
-        ValueError: 引数がNIJIE_URL_PATTERN と一致しない文字列の場合
+        ValueError: 引数が NIJIE_URL_PATTERN と一致しない文字列の場合
 
     Returns:
-        NijieURL: NijieURLを表すValueObject
+        NijieURL: NijieURL を表す ValueObject
     """
 
     url: URL
@@ -32,7 +32,7 @@ class NijieURL:
         """
         original_url = self.url.original_url
         if not self.is_valid(original_url):
-            raise ValueError("URL is not Nijie URL.")
+            raise ValueError("URL is not nijie URL.")
 
     @property
     def work_id(self) -> Workid:
@@ -55,17 +55,17 @@ class NijieURL:
 
     @classmethod
     def is_valid(cls, estimated_url: str) -> bool:
-        """NijieURLのパターンかどうかを返す
+        """NijieURL のパターンかどうかを返す
 
-        このメソッドがTrueならばNijieURL インスタンスが作成できる
-        また、このメソッドがTrueならば引数のestimated_url が真にNijieURL の形式であることが判別できる
+        このメソッドがTrueならば NijieURL インスタンスが作成できる
+        また、このメソッドがTrueならば引数の estimated_url が真に NijieURL の形式であることが判別できる
         (v.v.)
 
         Args:
             estimated_url (str): チェック対象の候補URLを表す文字列
 
         Returns:
-            bool: 引数がNijieURL.NIJIE_URL_PATTERN パターンに則っているならばTrue,
+            bool: 引数が NijieURL.NIJIE_URL_PATTERN パターンに則っているならばTrue,
                   そうでないならFalse
         """
         f1 = re.search(NijieURL.NIJIE_URL_PATTERN, estimated_url) is not None
@@ -77,7 +77,7 @@ class NijieURL:
         """NijieURL インスタンスを作成する
 
         URL インスタンスを作成して
-        それをもとにしてNijieURL インスタンス作成する
+        それをもとにして NijieURL インスタンス作成する
 
         Args:
             url (str | URL): 対象URLを表す文字列 or URL

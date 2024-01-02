@@ -26,7 +26,7 @@ from media_downloader.link_search.username import Username
 
 class TestNicoSeigaFetcher(unittest.TestCase):
     def setUp(self):
-        self.TBP = Path("./test")
+        self.TBP = Path("./tests")
 
     def tearDown(self):
         pass

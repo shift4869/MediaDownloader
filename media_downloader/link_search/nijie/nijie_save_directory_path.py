@@ -33,6 +33,13 @@ class NijieSaveDirectoryPath:
             NijieSaveDirectoryPath: 保存先ディレクトリパス
                 {base_path}/{作者名}({作者ID})/{作品タイトル}({作品ID})/の形を想定している
         """
+        if not isinstance(nijie_url, NijieURL):
+            raise TypeError("nijie_url must be NijieURL.")
+        if not isinstance(page_info, NijiePageInfo):
+            raise TypeError("page_info must be NijiePageInfo.")
+        if not isinstance(base_path, Path):
+            raise TypeError("base_path must be Path.")
+
         author_name = page_info.author_name.name
         author_id = page_info.author_id.id
         work_title = page_info.work_title.title
@@ -64,15 +71,16 @@ class NijieSaveDirectoryPath:
 
 if __name__ == "__main__":
     import configparser
-    from media_downloader.link_search.password import Password
+
     from media_downloader.link_search.nijie.nijie_fetcher import NijieFetcher
+    from media_downloader.link_search.password import Password
     from media_downloader.link_search.username import Username
 
     CONFIG_FILE_NAME = "./config/config.ini"
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE_NAME, encoding="utf8")
 
-    base_path = Path("./MediaDownloader/LinkSearch/")
+    base_path = Path("./media_downloader/link_search/")
     if config["nijie"].getboolean("is_nijie_trace"):
         fetcher = NijieFetcher(Username(config["nijie"]["email"]), Password(config["nijie"]["password"]), base_path)
 

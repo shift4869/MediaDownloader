@@ -1,14 +1,13 @@
 from dataclasses import dataclass
 
-import requests
-import requests.cookies
+import httpx
 
 
 @dataclass(frozen=True)
 class NijieCookie:
     """nijieのクッキー"""
 
-    _cookies: requests.cookies.RequestsCookieJar  # クッキー
+    _cookies: httpx.Cookies  # クッキー
     _headers: dict  # ヘッダー
 
     # nijieトップページ
@@ -18,21 +17,25 @@ class NijieCookie:
         self._is_valid()
 
     def _is_valid(self) -> bool:
-        if not isinstance(self._cookies, requests.cookies.RequestsCookieJar):
-            raise TypeError("_cookies is not requests.cookies.RequestsCookieJar.")
+        if not isinstance(self._cookies, httpx.Cookies):
+            raise TypeError("_cookies is not httpx.Cookies.")
         if not isinstance(self._headers, dict):
             raise TypeError("_headers is not dict.")
 
         if not (self._headers and self._cookies):
-            return ValueError("NijieCookie _headers or _cookies is invalid.")
+            raise ValueError("NijieCookie _headers or _cookies is invalid.")
 
         # トップページをGETしてクッキーが有効かどうか調べる
-        res = requests.get(self.NIJIE_TOP_URL, headers=self._headers, cookies=self._cookies)
-        res.raise_for_status()
+        response = httpx.get(self.NIJIE_TOP_URL, headers=self._headers, cookies=self._cookies, follow_redirects=True)
+        response.raise_for_status()
 
         # 返ってきたレスポンスがトップページのものかチェック
         # 不正なクッキーだと年齢確認画面に飛ばされる（titleとurlから判別可能）
-        if not (res.status_code == 200 and res.url == self.NIJIE_TOP_URL and "ニジエ - nijie" in res.text):
+        if not all([
+            response.status_code == 200,
+            str(response.url) == self.NIJIE_TOP_URL,
+            "ニジエ - nijie" in response.text,
+        ]):
             raise ValueError("NijieCookie is invalid.")
         return True
 
@@ -40,15 +43,16 @@ class NijieCookie:
 if __name__ == "__main__":
     import configparser
     from pathlib import Path
-    from media_downloader.link_search.password import Password
+
     from media_downloader.link_search.nijie.nijie_fetcher import NijieFetcher
+    from media_downloader.link_search.password import Password
     from media_downloader.link_search.username import Username
 
     CONFIG_FILE_NAME = "./config/config.ini"
     config = configparser.ConfigParser()
     config.read(CONFIG_FILE_NAME, encoding="utf8")
 
-    base_path = Path("./MediaDownloader/LinkSearch/")
+    base_path = Path("./media_downloader/link_search/")
     if config["nijie"].getboolean("is_nijie_trace"):
         fetcher = NijieFetcher(Username(config["nijie"]["email"]), Password(config["nijie"]["password"]), base_path)
 

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class Authorid:
+class Authorid():
     _id: int
 
     def __post_init__(self) -> None:
@@ -21,15 +21,16 @@ class Authorid:
 
 
 if __name__ == "__main__":
-    names = [
-        "作成者1",
-        "",
+    id_nums = [
+        12346578,
         -1,
+        "invalid id",
+        "",
     ]
 
-    for name in names:
+    for id_num in id_nums:
         try:
-            username = Authorid(name)
-            print(username)
+            authorid = Authorid(id_num)
+            print(authorid)
         except (ValueError, TypeError) as e:
             print(e.args[0])
