@@ -69,6 +69,10 @@ class PixivUgoiraDownloader:
 
         # うごイラの各フレームを保存するディレクトリを生成
         sd_path = self.base_path / f"./{work_title}({self.work_id.id})/"
+        if sd_path.is_dir():
+            logger.info(f"\t\t: {str(sd_path)} exist -> skip")
+            return DownloadResult.PASSED  # すでに取得済
+
         sd_path.mkdir(parents=True, exist_ok=True)
 
         # うごイラの情報をaapiから取得する
@@ -117,6 +121,7 @@ class PixivUgoiraDownloader:
 if __name__ == "__main__":
     import configparser
     import logging.config
+
     from media_downloader.link_search.password import Password
     from media_downloader.link_search.pixiv.pixiv_fetcher import PixivFetcher
     from media_downloader.link_search.username import Username
