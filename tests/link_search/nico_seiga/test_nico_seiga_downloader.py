@@ -9,7 +9,7 @@ import unittest
 from contextlib import ExitStack
 from pathlib import Path
 
-from mock import MagicMock, mock_open, patch
+from mock import MagicMock, patch
 
 from media_downloader.link_search.nico_seiga.authorid import Authorid
 from media_downloader.link_search.nico_seiga.authorname import Authorname

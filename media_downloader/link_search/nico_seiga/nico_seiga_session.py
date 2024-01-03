@@ -1,9 +1,8 @@
 from dataclasses import dataclass
 
-import requests
+import httpx
+import xmltodict
 from bs4 import BeautifulSoup
-from requests.adapters import HTTPAdapter
-from urllib3.util import Retry
 
 from media_downloader.link_search.nico_seiga.authorid import Authorid
 from media_downloader.link_search.nico_seiga.authorname import Authorname
@@ -12,6 +11,7 @@ from media_downloader.link_search.nico_seiga.illustname import Illustname
 from media_downloader.link_search.password import Password
 from media_downloader.link_search.url import URL
 from media_downloader.link_search.username import Username
+from media_downloader.util import find_values
 
 
 @dataclass(frozen=True)
@@ -22,13 +22,12 @@ class NicoSeigaSession:
     画像情報等ニコニコ静画とのやりとりには以後この認証済セッションを使う
     """
 
-    _session: requests.Session  # 認証済セッション
+    _session: httpx.Client  # 認証済セッション
 
     # 接続時に使用するヘッダー
-    agent_browser = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
-    agent_webkit = "AppleWebKit/537.36 (KHTML, like Gecko)"
-    agent_chrome = "Chrome/88.0.4324.190 Safari/537.36"
-    HEADERS = {"User-Agent": " ".join([agent_browser, agent_webkit, agent_chrome])}
+    HEADERS = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"
+    }
     # ログインエンドポイント
     LOGIN_ENDPOINT = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
     # 画像情報取得エンドポイントベース
@@ -43,14 +42,11 @@ class NicoSeigaSession:
         self._is_valid()
 
     def _is_valid(self) -> bool:
-        if not isinstance(self._session, requests.Session):
-            raise TypeError("_session is not requests.Session.")
-
-        if not self._session:
-            return ValueError("NicoSeigaSession _session is invalid.")
+        if not isinstance(self._session, httpx.Client):
+            raise TypeError("_session is not httpx.Client.")
         return True
 
-    def login(self, username: Username, password: Password) -> requests.Session:
+    def login(self, username: Username, password: Password) -> httpx.Client:
         """セッションを開始し、認証・ログインする
 
         Args:
@@ -61,10 +57,8 @@ class NicoSeigaSession:
             session (NicoSeigaSession): 認証済セッション
         """
         # セッション開始
-        session = requests.session()
-        retries = Retry(total=5, backoff_factor=1, status_forcelist=[500, 502, 503, 504])
-        session.mount("http://", HTTPAdapter(max_retries=retries))
-        session.mount("https://", HTTPAdapter(max_retries=retries))
+        transport = httpx.HTTPTransport(retries=5)
+        session = httpx.Client(follow_redirects=True, timeout=60.0, transport=transport)
 
         # ログイン
         params = {
@@ -73,7 +67,6 @@ class NicoSeigaSession:
         }
         response = session.post(self.LOGIN_ENDPOINT, data=params, headers=self.HEADERS)
         response.raise_for_status()
-
         return session
 
     def get_author_id(self, illust_id: Illustid) -> Authorid:
@@ -91,9 +84,9 @@ class NicoSeigaSession:
         response.raise_for_status()
 
         # 静画情報解析
-        soup = BeautifulSoup(response.text, "lxml-xml")
-        xml_image = soup.find("image")
-        author_id = int(xml_image.find("user_id").text)
+        response_dict = xmltodict.parse(response.text)
+        author_id_str = find_values(response_dict, "user_id", True, [], [])
+        author_id = int(author_id_str)
         return Authorid(author_id)
 
     def get_author_name(self, author_id: Authorid) -> Authorname:
@@ -111,9 +104,8 @@ class NicoSeigaSession:
         response.raise_for_status()
 
         # 作者情報解析
-        soup = BeautifulSoup(response.text, "lxml-xml")
-        xml_user = soup.find("user")
-        author_name = xml_user.find("nickname").text
+        response_dict = xmltodict.parse(response.text)
+        author_name = find_values(response_dict, "nickname", True, [], [])
         return Authorname(author_name)
 
     def get_illust_title(self, illust_id: Illustid) -> Illustname:
@@ -131,9 +123,8 @@ class NicoSeigaSession:
         response.raise_for_status()
 
         # 静画情報解析
-        soup = BeautifulSoup(response.text, "lxml-xml")
-        xml_image = soup.find("image")
-        illust_title = xml_image.find("title").text
+        response_dict = xmltodict.parse(response.text)
+        illust_title = find_values(response_dict, "title", True, [], [])
         return Illustname(illust_title)
 
     def get_source_url(self, illust_id: Illustid) -> URL:
@@ -173,3 +164,22 @@ class NicoSeigaSession:
         response = self._session.get(source_url.original_url, headers=self.HEADERS)
         response.raise_for_status()
         return response.content
+
+
+if __name__ == "__main__":
+    import configparser
+    from pathlib import Path
+
+    from media_downloader.link_search.nico_seiga.nico_seiga_fetcher import NicoSeigaFetcher
+
+    CONFIG_FILE_NAME = "./config/config.ini"
+    config = configparser.ConfigParser()
+    config.read(CONFIG_FILE_NAME, encoding="utf8")
+
+    base_path = Path("./media_gathering/link_search/")
+    username = Username(config["nico_seiga"]["email"])
+    password = Password(config["nico_seiga"]["password"])
+    fetcher = NicoSeigaFetcher(username, password, base_path)
+    illust_id = 11308865
+    illust_url = f"https://seiga.nicovideo.jp/seiga/im{illust_id}?query=1"
+    fetcher.fetch(illust_url)
