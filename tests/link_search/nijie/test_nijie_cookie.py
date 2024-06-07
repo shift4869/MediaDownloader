@@ -1,5 +1,4 @@
-"""NijieCookie のテスト
-"""
+"""NijieCookie のテスト"""
 
 import sys
 import unittest

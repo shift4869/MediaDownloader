@@ -30,9 +30,7 @@ class NijieFetcher(FetcherBase):
     agent_browser = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
     agent_webkit = "AppleWebKit/537.36 (KHTML, like Gecko)"
     agent_chrome = "Chrome/88.0.4324.190 Safari/537.36"
-    HEADERS = {
-        "User-Agent": " ".join([agent_browser, agent_webkit, agent_chrome])
-    }
+    HEADERS = {"User-Agent": " ".join([agent_browser, agent_webkit, agent_chrome])}
     # ログイン情報を保持するクッキーファイル置き場
     NIJIE_COOKIE_PATH = "./config/nijie_cookie.json"
 

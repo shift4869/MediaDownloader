@@ -1,5 +1,4 @@
-"""NijieDownloader のテスト
-"""
+"""NijieDownloader のテスト"""
 
 import shutil
 import sys

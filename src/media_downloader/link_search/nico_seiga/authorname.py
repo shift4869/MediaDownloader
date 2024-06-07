@@ -6,7 +6,7 @@ import emoji
 
 
 @dataclass(frozen=True)
-class Authorname():
+class Authorname:
     _original_name: str
     _name: ClassVar[str]
 
@@ -14,6 +14,7 @@ class Authorname():
         """初期化後処理
 
         サニタイズを行う
+        TODO::サニタイズを厳密に行う
         """
         if not isinstance(self._original_name, str):
             raise TypeError("name is not string, invalid Authorname.")
@@ -33,6 +34,8 @@ class Authorname():
 if __name__ == "__main__":
     names = [
         "作成者1",
+        "作成者2?****//",
+        "作成者3😀",
         "",
         -1,
     ]
@@ -40,6 +43,6 @@ if __name__ == "__main__":
     for name in names:
         try:
             username = Authorname(name)
-            print(username)
+            print(username.name)
         except (ValueError, TypeError) as e:
             print(e.args[0])

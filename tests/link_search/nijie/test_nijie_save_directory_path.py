@@ -1,5 +1,4 @@
-"""NijieSaveDirectoryPath のテスト
-"""
+"""NijieSaveDirectoryPath のテスト"""
 
 import re
 import shutil

@@ -6,7 +6,7 @@ import emoji
 
 
 @dataclass(frozen=True)
-class Authorname():
+class Illustname:
     _original_name: str
     _name: ClassVar[str]
 
@@ -33,16 +33,16 @@ class Authorname():
 
 if __name__ == "__main__":
     names = [
-        "作成者1",
-        "作成者2?****//",
-        "作成者3😀",
+        "作品名1",
+        "作品名2?****//",
+        "作品名3😀",
         "",
         -1,
     ]
 
     for name in names:
         try:
-            username = Authorname(name)
+            username = Illustname(name)
             print(username.name)
         except (ValueError, TypeError) as e:
             print(e.args[0])

@@ -1,5 +1,4 @@
-"""NijiePageInfo のテスト
-"""
+"""NijiePageInfo のテスト"""
 
 import sys
 import unittest

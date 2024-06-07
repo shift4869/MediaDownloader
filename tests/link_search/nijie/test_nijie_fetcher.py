@@ -1,5 +1,4 @@
-"""NijieFetcher のテスト
-"""
+"""NijieFetcher のテスト"""
 
 import shutil
 import sys
@@ -50,9 +49,7 @@ class TestNijieFetcher(unittest.TestCase):
         agent_browser = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
         agent_webkit = "AppleWebKit/537.36 (KHTML, like Gecko)"
         agent_chrome = "Chrome/88.0.4324.190 Safari/537.36"
-        expect = {
-            "User-Agent": " ".join([agent_browser, agent_webkit, agent_chrome])
-        }
+        expect = {"User-Agent": " ".join([agent_browser, agent_webkit, agent_chrome])}
         self.assertEqual(expect, actual.HEADERS)
         expect = "./config/nijie_cookie.json"
         self.assertEqual(expect, actual.NIJIE_COOKIE_PATH)
