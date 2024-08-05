@@ -35,7 +35,7 @@ class NicoSeigaSession:
     # ユーザー情報取得エンドポイントベース
     USERNAME_API_ENDPOINT_BASE = "https://seiga.nicovideo.jp/api/user/info?id="
     # 静画直リンクエンドポイントベース
-    IMAGE_SOUECE_API_ENDPOINT_BASE = "http://seiga.nicovideo.jp/image/source?id="
+    IMAGE_SOUECE_API_ENDPOINT_BASE = "https://seiga.nicovideo.jp/image/source?id="
 
     def __init__(self, username: Username, password: Password) -> None:
         object.__setattr__(self, "_session", self.login(username, password))

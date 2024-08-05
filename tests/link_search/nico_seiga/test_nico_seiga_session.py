@@ -32,7 +32,7 @@ class TestNicoSeigaSession(unittest.TestCase):
 
             IMAGE_INFO_API_ENDPOINT_BASE = "http://seiga.nicovideo.jp/api/illust/info?id="
             USERNAME_API_ENDPOINT_BASE = "https://seiga.nicovideo.jp/api/user/info?id="
-            IMAGE_SOUECE_API_ENDPOINT_BASE = "http://seiga.nicovideo.jp/image/source?id="
+            IMAGE_SOUECE_API_ENDPOINT_BASE = "https://seiga.nicovideo.jp/image/source?id="
 
             def return_get_html(url, headers):
                 r = MagicMock()
@@ -64,7 +64,7 @@ class TestNicoSeigaSession(unittest.TestCase):
         LOGIN_ENDPOINT = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
         IMAGE_INFO_API_ENDPOINT_BASE = "http://seiga.nicovideo.jp/api/illust/info?id="
         USERNAME_API_ENDPOINT_BASE = "https://seiga.nicovideo.jp/api/user/info?id="
-        IMAGE_SOUECE_API_ENDPOINT_BASE = "http://seiga.nicovideo.jp/image/source?id="
+        IMAGE_SOUECE_API_ENDPOINT_BASE = "https://seiga.nicovideo.jp/image/source?id="
         self.assertIsNotNone(session._session)
         self.assertEqual(HEADERS, session.HEADERS)
         self.assertEqual(LOGIN_ENDPOINT, session.LOGIN_ENDPOINT)
