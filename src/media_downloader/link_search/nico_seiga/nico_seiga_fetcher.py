@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from logging import INFO, getLogger
 from pathlib import Path
@@ -9,7 +10,9 @@ from media_downloader.link_search.nico_seiga.nico_seiga_url import NicoSeigaURL
 from media_downloader.link_search.password import Password
 from media_downloader.link_search.url import URL
 from media_downloader.link_search.username import Username
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 

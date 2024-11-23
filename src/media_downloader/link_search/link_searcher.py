@@ -1,6 +1,8 @@
 import configparser
+import logging
 from logging import INFO, getLogger
 from pathlib import Path
+from typing import Self
 
 from plyer import notification
 
@@ -13,7 +15,9 @@ from media_downloader.link_search.pixiv_novel.pixiv_novel_fetcher import PixivNo
 from media_downloader.link_search.url import URL
 from media_downloader.link_search.username import Username
 from media_downloader.log_message import MSG
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 
@@ -49,7 +53,7 @@ class LinkSearcher:
         return False
 
     @classmethod
-    def create(cls, config: configparser.ConfigParser) -> "LinkSearcher":
+    def create(cls, config: configparser.ConfigParser) -> Self:
         logger.info(MSG.LINKSEARCHER_CREATE_START.value)
         ls = LinkSearcher()
 

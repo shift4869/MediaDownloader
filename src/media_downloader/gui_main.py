@@ -5,10 +5,10 @@ import subprocess
 from logging import INFO, getLogger
 from pathlib import Path
 
-import PySimpleGUI as sg
+import TkEasyGUI as sg
 
 from media_downloader.link_search.link_searcher import LinkSearcher
-from media_downloader.util import Result
+from media_downloader.util import CustomLogger, Result
 
 
 def gui_main() -> Result:
@@ -36,7 +36,11 @@ def gui_main() -> Result:
     # ウィンドウのレイアウト
     layout = [
         [sg.Text("MediaDownloader")],
-        [sg.Text("作品ページURL", size=(18, 1)), sg.InputText(key="-WORK_URL-", default_text="")],
+        [
+            sg.Text("作品ページURL", size=(18, 1)),
+            sg.InputText(key="-WORK_URL-", default_text="", size=(61, 1)),
+            sg.Button("実行", key="-RUN-"),
+        ],
         [
             sg.Text("チェック対象", size=(18, 1)),
             sg.Checkbox("pixiv", default=config["pixiv"].getboolean("is_pixiv_trace"), key="-CB_pixiv-"),
@@ -47,19 +51,17 @@ def gui_main() -> Result:
         ],
         [
             sg.Text("保存先パス", size=(18, 1)),
-            sg.InputText(key="-SAVE_PATH-", default_text=save_base_path),
-            sg.FolderBrowse("参照", initial_folder=save_base_path, pad=((3, 0), (0, 0))),
+            sg.InputText(key="-SAVE_PATH-", default_text=save_base_path, size=(61, 1)),
+            sg.FolderBrowse("参照", initial_folder=save_base_path),
             sg.Button("開く", key="-FOLDER_OPEN-", pad=((7, 2), (0, 0))),
         ],
-        [sg.Text("", size=(53, 2)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0)))],
+        [sg.Text("", size=(70, 2))],
         [
             sg.Multiline(
                 key="-OUTPUT-",
                 size=(100, 10),
-                auto_refresh=True,
+                readonly=True,
                 autoscroll=True,
-                reroute_stdout=True,
-                reroute_stderr=True,
             )
         ],
     ]
@@ -77,10 +79,11 @@ def gui_main() -> Result:
         # 自分以外のすべてのライブラリのログ出力を抑制
         if "media_downloader" not in name:
             getLogger(name).disabled = True
+    logging.setLoggerClass(CustomLogger)
     logger = getLogger(__name__)
     logger.setLevel(INFO)
 
-    print("---ここにログが表示されます---")
+    logger.info("---ここにログが表示されます---", window=window)
 
     while True:
         event, values = window.read()
@@ -89,12 +92,12 @@ def gui_main() -> Result:
         if event == "-RUN-":
             try:
                 work_url = values["-WORK_URL-"]
-                print("初期化中...")
+                logger.info("初期化中...")
                 config["pixiv"]["is_pixiv_trace"] = "True" if values["-CB_pixiv-"] else "False"
                 config["nijie"]["is_nijie_trace"] = "True" if values["-CB_nijie-"] else "False"
                 config["nico_seiga"]["is_seiga_trace"] = "True" if values["-CB_nico_seiga-"] else "False"
                 link_searcher = LinkSearcher.create(config)
-                print("初期化完了！")
+                logger.info("初期化完了！")
 
                 link_searcher.fetch(work_url)
             except Exception:

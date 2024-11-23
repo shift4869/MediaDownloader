@@ -1,5 +1,39 @@
 from enum import Enum, auto
+from logging import Logger
 from typing import Any
+
+from TkEasyGUI import Multiline, Window
+
+window_cache: Window = None
+
+
+class CustomLogger(Logger):
+    def info(self, msg: str, window: Window = None, *args, **kwargs):
+        # コンソールとファイル出力
+        if "stacklevel" not in kwargs:
+            # 呼び出し元の行番号を採用するためにstacklevelを設定
+            kwargs["stacklevel"] = 2
+        super().info(msg, *args, **kwargs)
+
+        # GUI画面表示
+        global window_cache
+        if window:
+            # windowが指定されていたらキャッシュとして保存
+            if not window_cache:
+                window_cache = window
+        else:
+            # windowが指定されていない場合
+            if window_cache:
+                # キャッシュがあるならそれを採用
+                window = window_cache
+            else:
+                # そうでない場合、画面更新は何もせず終了
+                return
+        multiline: Multiline = window["-OUTPUT-"]
+        old_text = multiline.get_text()
+        multiline.set_text(old_text + msg + "\n")
+        multiline.update()
+        window.refresh()
 
 
 class Result(Enum):

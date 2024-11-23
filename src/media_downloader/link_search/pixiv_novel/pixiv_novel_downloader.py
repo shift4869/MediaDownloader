@@ -1,4 +1,5 @@
 import enum
+import logging
 from dataclasses import dataclass
 from logging import INFO, getLogger
 
@@ -7,7 +8,9 @@ from pixivpy3 import AppPixivAPI
 
 from media_downloader.link_search.pixiv_novel.pixiv_novel_save_directory_path import PixivNovelSaveDirectoryPath
 from media_downloader.link_search.pixiv_novel.pixiv_novel_url import PixivNovelURL
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 

@@ -1,4 +1,5 @@
 import enum
+import logging
 from dataclasses import dataclass
 from logging import INFO, getLogger
 from pathlib import Path
@@ -11,7 +12,9 @@ from media_downloader.link_search.nijie.nijie_cookie import NijieCookie
 from media_downloader.link_search.nijie.nijie_page_info import NijiePageInfo
 from media_downloader.link_search.nijie.nijie_save_directory_path import NijieSaveDirectoryPath
 from media_downloader.link_search.nijie.nijie_url import NijieURL
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 

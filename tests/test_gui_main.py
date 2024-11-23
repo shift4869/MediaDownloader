@@ -4,7 +4,7 @@ import unittest
 from collections import namedtuple
 from pathlib import Path
 
-import PySimpleGUI as sg
+import TkEasyGUI as sg
 from mock import call, patch
 
 from media_downloader.gui_main import gui_main
@@ -13,36 +13,42 @@ from media_downloader.util import Result
 
 class TestGuiMain(unittest.TestCase):
     def _check_layout(self, e, a):
-        """sgオブジェクトは別IDで生成されるため、各要素を比較する
-        self.assertEqual(expect, actual)
-        """
+        """sgオブジェクトは別IDで生成されるため、各要素を比較する"""
         # typeチェック
         self.assertEqual(type(e), type(a))
-        # イテラブルなら再起
-        if hasattr(e, "__iter__") and hasattr(a, "__iter__"):
+        # リストならば再起
+        if isinstance(e, list) and isinstance(a, list):
             self.assertEqual(len(e), len(a))
             for e1, a1 in zip(e, a):
                 self._check_layout(e1, a1)
-        # Rows属性を持つなら再起
-        if hasattr(e, "Rows") and hasattr(a, "Rows"):
-            for e2, a2 in zip(e.Rows, a.Rows):
-                self._check_layout(e2, a2)
-        # 要素チェック
-        if hasattr(a, "RightClickMenu") and a.RightClickMenu:
-            self.assertEqual(e.RightClickMenu, a.RightClickMenu)
-        if hasattr(a, "ColumnHeadings") and a.ColumnHeadings:
-            self.assertEqual(e.ColumnHeadings, a.ColumnHeadings)
-        if hasattr(a, "ButtonText") and a.ButtonText:
-            self.assertEqual(e.ButtonText, a.ButtonText)
-        if hasattr(a, "DisplayText") and a.DisplayText:
-            self.assertEqual(e.DisplayText, a.DisplayText)
-        if hasattr(a, "Key") and a.Key:
-            self.assertEqual(e.Key, a.Key)
+        else:
+            # 要素チェック
+            match e, a:
+                case (sg.Text(), sg.Text()):
+                    self.assertEqual(e.get(), a.get())
+                case (sg.InputText(), sg.InputText()):
+                    self.assertEqual(e.key, a.key)
+                case (sg.Button(), sg.Button()):
+                    self.assertEqual(e.get(), a.get())
+                    self.assertEqual(e.key, a.key)
+                case (sg.Checkbox(), sg.Checkbox()):
+                    self.assertEqual(e.key, a.key)
+                case (sg.FolderBrowse(), sg.FolderBrowse()):
+                    pass
+                case (sg.Multiline(), sg.Multiline()):
+                    self.assertEqual(e.get(), a.get())
+                    self.assertEqual(e.key, a.key)
+                case _:
+                    raise ValueError(e, a)
 
     def _make_layout(self, config: configparser.ConfigParser, save_base_path: Path) -> list[list]:
         layout = [
             [sg.Text("MediaDownloader")],
-            [sg.Text("作品ページURL", size=(18, 1)), sg.InputText(key="-WORK_URL-", default_text="")],
+            [
+                sg.Text("作品ページURL", size=(18, 1)),
+                sg.InputText(key="-WORK_URL-", default_text="", size=(61, 1)),
+                sg.Button("実行", key="-RUN-"),
+            ],
             [
                 sg.Text("チェック対象", size=(18, 1)),
                 sg.Checkbox("pixiv", default=config["pixiv"].getboolean("is_pixiv_trace"), key="-CB_pixiv-"),
@@ -53,19 +59,17 @@ class TestGuiMain(unittest.TestCase):
             ],
             [
                 sg.Text("保存先パス", size=(18, 1)),
-                sg.InputText(key="-SAVE_PATH-", default_text=save_base_path),
-                sg.FolderBrowse("参照", initial_folder=save_base_path, pad=((3, 0), (0, 0))),
+                sg.InputText(key="-SAVE_PATH-", default_text=save_base_path, size=(61, 1)),
+                sg.FolderBrowse("参照", initial_folder=save_base_path),
                 sg.Button("開く", key="-FOLDER_OPEN-", pad=((7, 2), (0, 0))),
             ],
-            [sg.Text("", size=(53, 2)), sg.Button("実行", key="-RUN-", pad=((7, 2), (0, 0)))],
+            [sg.Text("", size=(70, 2))],
             [
                 sg.Multiline(
                     key="-OUTPUT-",
                     size=(100, 10),
-                    auto_refresh=True,
+                    readonly=True,
                     autoscroll=True,
-                    reroute_stdout=True,
-                    reroute_stderr=True,
                 )
             ],
         ]
@@ -75,7 +79,7 @@ class TestGuiMain(unittest.TestCase):
         CONFIG_FILE_NAME = "./config/config.ini"
         config = configparser.ConfigParser()
         config.read(CONFIG_FILE_NAME, encoding="utf8")
-        save_base_path = Path(__file__).parent
+        save_base_path = Path(config["save_base_path"]["save_base_path"])
         layout = self._make_layout(config, save_base_path)
 
         ICON_PATH = "./image/icon.png"
@@ -84,6 +88,7 @@ class TestGuiMain(unittest.TestCase):
         mock_print = self.enterContext(patch("media_downloader.gui_main.print"))
         mock_config = self.enterContext(patch("media_downloader.gui_main.configparser.ConfigParser"))
         mock_logging = self.enterContext(patch("media_downloader.gui_main.logging"))
+        mock_logger = self.enterContext(patch("media_downloader.gui_main.getLogger"))
         mock_window = self.enterContext(patch("media_downloader.gui_main.sg.Window"))
         mock_link_searcher = self.enterContext(patch("media_downloader.gui_main.LinkSearcher.create"))
         mock_subprocess = self.enterContext(patch("media_downloader.gui_main.subprocess"))

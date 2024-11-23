@@ -58,9 +58,10 @@ class TestNicoSeigaSession(unittest.TestCase):
     def test_NicoSeigaSession(self):
         session = self._get_session()
 
-        HEADERS = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"
-        }
+        h_mozilla = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+        h_webkit = "AppleWebKit/537.36 (KHTML, like Gecko)"
+        h_chrome = "Chrome/88.0.4324.190 Safari/537.36"
+        HEADERS = {"User-Agent": f"{h_mozilla} {h_webkit} {h_chrome}"}
         LOGIN_ENDPOINT = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
         IMAGE_INFO_API_ENDPOINT_BASE = "http://seiga.nicovideo.jp/api/illust/info?id="
         USERNAME_API_ENDPOINT_BASE = "https://seiga.nicovideo.jp/api/user/info?id="

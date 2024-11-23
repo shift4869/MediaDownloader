@@ -1,4 +1,5 @@
 import enum
+import logging
 import re
 from dataclasses import dataclass
 from logging import INFO, getLogger
@@ -9,7 +10,9 @@ from media_downloader.link_search.nico_seiga.nico_seiga_info import NicoSeigaInf
 from media_downloader.link_search.nico_seiga.nico_seiga_save_directory_path import NicoSeigaSaveDirectoryPath
 from media_downloader.link_search.nico_seiga.nico_seiga_session import NicoSeigaSession
 from media_downloader.link_search.nico_seiga.nico_seiga_url import NicoSeigaURL
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 

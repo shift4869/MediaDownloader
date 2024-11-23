@@ -1,4 +1,5 @@
 import enum
+import logging
 from dataclasses import dataclass
 from logging import INFO, getLogger
 from pathlib import Path
@@ -9,7 +10,9 @@ from pixivpy3 import AppPixivAPI
 
 from media_downloader.link_search.pixiv.workid import Workid
 from media_downloader.link_search.pixiv.worktitle import Worktitle
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 

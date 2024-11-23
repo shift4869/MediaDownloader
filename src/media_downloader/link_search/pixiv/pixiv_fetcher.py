@@ -1,3 +1,4 @@
+import logging
 from dataclasses import dataclass
 from logging import INFO, getLogger
 from pathlib import Path
@@ -12,7 +13,9 @@ from media_downloader.link_search.pixiv.pixiv_work_downloader import PixivWorkDo
 from media_downloader.link_search.pixiv.pixiv_work_url import PixivWorkURL
 from media_downloader.link_search.url import URL
 from media_downloader.link_search.username import Username
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 

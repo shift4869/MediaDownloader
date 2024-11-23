@@ -1,4 +1,5 @@
 import enum
+import logging
 import re
 from dataclasses import dataclass
 from logging import INFO, getLogger
@@ -11,7 +12,9 @@ from media_downloader.link_search.pixiv.pixiv_save_directory_path import PixivSa
 from media_downloader.link_search.pixiv.pixiv_source_list import PixivSourceList
 from media_downloader.link_search.pixiv.pixiv_ugoira_downloader import PixivUgoiraDownloader
 from media_downloader.link_search.pixiv.workid import Workid
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 
@@ -109,6 +112,7 @@ class PixivWorkDownloader:
 if __name__ == "__main__":
     import configparser
     import logging.config
+
     from media_downloader.link_search.password import Password
     from media_downloader.link_search.pixiv.pixiv_fetcher import PixivFetcher
     from media_downloader.link_search.username import Username

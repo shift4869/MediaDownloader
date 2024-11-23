@@ -25,9 +25,10 @@ class NicoSeigaSession:
     _session: httpx.Client  # 認証済セッション
 
     # 接続時に使用するヘッダー
-    HEADERS = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.190 Safari/537.36"
-    }
+    h_mozilla = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+    h_webkit = "AppleWebKit/537.36 (KHTML, like Gecko)"
+    h_chrome = "Chrome/88.0.4324.190 Safari/537.36"
+    HEADERS = {"User-Agent": f"{h_mozilla} {h_webkit} {h_chrome}"}
     # ログインエンドポイント
     LOGIN_ENDPOINT = "https://account.nicovideo.jp/api/v1/login?show_button_twitter=1&site=niconico&show_button_facebook=1&next_url=&mail_or_tel=1"
     # 画像情報取得エンドポイントベース

@@ -1,3 +1,4 @@
+import logging
 import urllib.parse
 from dataclasses import dataclass
 from http.cookiejar import Cookie
@@ -14,7 +15,9 @@ from media_downloader.link_search.nijie.nijie_url import NijieURL
 from media_downloader.link_search.password import Password
 from media_downloader.link_search.url import URL
 from media_downloader.link_search.username import Username
+from media_downloader.util import CustomLogger
 
+logging.setLoggerClass(CustomLogger)
 logger = getLogger(__name__)
 logger.setLevel(INFO)
 

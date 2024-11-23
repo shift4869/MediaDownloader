@@ -18,8 +18,8 @@ dependencies = [
     "pixivpy3>=3.7.5",
     "plyer>=2.1.0",
     "pycodestyle>=2.11.1",
-    "pysimplegui==4.60.5",
     "ruff>=0.4.8",
+    "tkeasygui>=1.0.10",
     "xmltodict>=0.13.0",
 ]
 readme = "README.md"
@@ -56,6 +56,11 @@ quote-style = "double"
 [tool.rye]
 managed = true
 dev-dependencies = []
+
+[tool.rye.scripts]
+unittest = "python -m unittest"
+coverage_html = {chain = ["coverage run --source . -m unittest discover", "coverage html"]}
+copy_to_run = "./copy_to_run.bat"
 
 [tool.hatch.metadata]
 allow-direct-references = true
